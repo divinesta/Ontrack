@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { provisionalGreenPalette } from "@/theme";
@@ -11,148 +11,102 @@ export function Login() {
 
    return (
       <SafeAreaView style={styles.screen}>
-            <View style={styles.contourOne} />
-            <View style={styles.contourTwo} />
-            <View style={styles.contourThree} />
-            <View style={styles.contourFour} />
+         <View style={styles.contourOne} />
+         <View style={styles.contourTwo} />
+         <View style={styles.contourThree} />
+         <View style={styles.contourFour} />
+         <View style={styles.waypointA} />
+         <View style={styles.waypointB} />
+         <View style={styles.trailLine} />
 
-            <View style={styles.waypointA} />
-            <View style={styles.waypointB} />
-            <View style={styles.waypointC} />
-            <View style={styles.trailLine} />
-
-            <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-               <View style={styles.nav}>
-                  <View style={styles.compassWrap}>
-                     <View style={styles.compassRing} />
-                     <View style={styles.compassNeedle} />
-                  </View>
-                  <Text style={styles.navBrand}>ONTRACK</Text>
-               </View>
+         <View style={styles.content}>
+            <View>
+               <Pressable hitSlop={12} onPress={() => router.push("/?step=signup")} style={styles.backButton}>
+                  <Text style={styles.backText}>‹</Text>
+               </Pressable>
 
                <View style={styles.hero}>
                   <Text style={styles.heroEyebrow}>CONTINUE YOUR JOURNEY</Text>
                   <Text style={styles.heroTitle}>Sign in</Text>
                   <Text style={styles.heroBody}>Pick up where you left off. Your tasks, reflections, and progress are waiting.</Text>
                </View>
+            </View>
 
-               <View style={styles.form}>
-                  <View style={styles.inputWrap}>
-                     <TextInput autoCapitalize="none" keyboardType="email-address" placeholder="Email address" placeholderTextColor="#6b8a6f" style={styles.input} />
-                  </View>
+            <View style={styles.form}>
+               <Pressable style={styles.googleButton}>
+                  <Text style={styles.googleIcon}>G</Text>
+                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+               </Pressable>
 
-                  <View style={styles.inputWrap}>
-                     <TextInput placeholder="Password" placeholderTextColor="#6b8a6f" secureTextEntry style={styles.input} />
-                  </View>
-
-                  <Pressable style={styles.primaryButton}>
-                     <Text style={styles.primaryButtonText}>Continue</Text>
-                     <View style={styles.buttonArrow}>
-                        <Text style={styles.arrowText}>→</Text>
-                     </View>
-                  </Pressable>
-
-                  <View style={styles.orSection}>
-                     <View style={styles.orLine} />
-                     <Text style={styles.orText}>or</Text>
-                     <View style={styles.orLine} />
-                  </View>
-
-                  <Pressable style={styles.appleButton}>
-                     <Text style={styles.appleIcon}></Text>
-                     <Text style={styles.appleButtonText}>Continue with Apple</Text>
-                  </Pressable>
-
-                  <Pressable style={styles.googleButton}>
-                     <Text style={styles.googleIcon}>G</Text>
-                     <Text style={styles.googleButtonText}>Continue with Google</Text>
-                  </Pressable>
+               <View style={styles.orSection}>
+                  <View style={styles.orLine} />
+                  <Text style={styles.orText}>Sign in with Google or Email</Text>
+                  <View style={styles.orLine} />
                </View>
+
+               <View style={styles.inputWrap}>
+                  <TextInput autoCapitalize="none" keyboardType="email-address" placeholder="E-mail" placeholderTextColor="#6b8a6f" style={styles.input} />
+               </View>
+
+               <View style={styles.inputWrap}>
+                  <TextInput placeholder="Password" placeholderTextColor="#6b8a6f" secureTextEntry style={styles.input} />
+               </View>
+
+               <Pressable style={styles.primaryButton}>
+                  <Text style={styles.primaryButtonText}>Continue</Text>
+                  <View style={styles.buttonArrow}>
+                     <Text style={styles.arrowText}>→</Text>
+                  </View>
+               </Pressable>
 
                <View style={styles.footer}>
-                  <Pressable
-                     accessibilityRole="button"
-                     hitSlop={12}
-                     onPress={() => router.push("/sign-up")}
-                     style={styles.footerPressable}
-                  >
-                     <Text style={styles.footerText}>
-                        Don't have an account? <Text style={styles.footerLink}>Sign up free</Text>
-                     </Text>
+                  <Pressable hitSlop={12}>
+                     <Text style={styles.footerLink}>Reset password</Text>
                   </Pressable>
-                  <Text style={styles.legal}>By continuing you agree to our Terms & Privacy Policy</Text>
+                  <Pressable hitSlop={12} onPress={() => router.push("/")}>
+                     <Text style={styles.footerLink}>Create new account</Text>
+                  </Pressable>
                </View>
-            </ScrollView>
+            </View>
+         </View>
       </SafeAreaView>
    );
 }
 
 const styles = StyleSheet.create({
-   screen: {
-      backgroundColor: "#f4f9f2",
-      flex: 1,
-      overflow: "hidden",
-   },
-   appleButton: {
-      alignItems: "center",
-      backgroundColor: "#102016",
-      borderRadius: 26,
-      flexDirection: "row",
-      gap: 10,
-      height: 52,
-      justifyContent: "center",
-   },
-   appleButtonText: {
-      color: "#ffffff",
-      fontSize: 15,
-      fontWeight: "700",
-   },
-   appleIcon: {
-      color: "#ffffff",
-      fontSize: 18,
-   },
    arrowText: {
       color: "#ffffff",
-      fontSize: 16,
-      fontWeight: "700",
+      fontSize: 14,
+      fontWeight: "800",
    },
    buttonArrow: {
       alignItems: "center",
       backgroundColor: "rgba(255,255,255,0.2)",
       borderRadius: 12,
-      height: 28,
+      height: 26,
       justifyContent: "center",
       position: "absolute",
-      right: 12,
-      width: 28,
+      right: 10,
+      width: 26,
    },
-   compassNeedle: {
-      backgroundColor: "#102016",
-      borderRadius: 1,
-      height: 10,
-      position: "absolute",
-      top: 3,
-      width: 2,
-   },
-   compassRing: {
-      borderColor: "#102016",
-      borderRadius: 9,
-      borderWidth: 2,
-      height: 18,
-      width: 18,
-   },
-   compassWrap: {
+   backButton: {
       alignItems: "center",
-      height: 18,
+      height: 40,
       justifyContent: "center",
-      width: 18,
+      marginBottom: 5,
+      width: 40,
+   },
+   backText: {
+      color: "#102016",
+      fontSize: 44,
+      lineHeight: 44,
    },
    content: {
-      flexGrow: 1,
-      justifyContent: "center",
-      paddingBottom: 46,
+      flex: 1,
+      justifyContent: "space-between",
+      paddingBottom: 34,
       paddingHorizontal: 32,
-      paddingTop: 24,
+      paddingTop: 28,
    },
    contourFour: {
       borderColor: "rgba(16,32,22,0.06)",
@@ -161,7 +115,7 @@ const styles = StyleSheet.create({
       height: 600,
       left: -200,
       position: "absolute",
-      top: 200,
+      top: 240,
       width: 600,
    },
    contourOne: {
@@ -197,35 +151,27 @@ const styles = StyleSheet.create({
    footer: {
       alignItems: "center",
       gap: 10,
-      marginTop: 32,
+      paddingTop: 4,
    },
    footerLink: {
       color: "#102016",
+      fontSize: 13,
       fontWeight: "900",
-   },
-   footerPressable: {
-      alignItems: "center",
-      minHeight: 36,
-      justifyContent: "center",
-      paddingHorizontal: 12,
-   },
-   footerText: {
-      color: "#5a7560",
-      fontSize: 14,
+      textDecorationLine: "underline",
    },
    form: {
-      gap: 16,
-      marginTop: 32,
+      gap: 13,
+      width: "100%",
    },
    googleButton: {
       alignItems: "center",
       backgroundColor: "#ffffff",
       borderColor: "rgba(16,32,22,0.12)",
-      borderRadius: 26,
+      borderRadius: 24,
       borderWidth: 1.5,
       flexDirection: "row",
       gap: 10,
-      height: 52,
+      height: 46,
       justifyContent: "center",
       shadowColor: "#102016",
       shadowOffset: { height: 4, width: 0 },
@@ -235,7 +181,7 @@ const styles = StyleSheet.create({
    googleButtonText: {
       color: "#102016",
       fontSize: 15,
-      fontWeight: "700",
+      fontWeight: "800",
    },
    googleIcon: {
       color: palette.mint,
@@ -244,12 +190,12 @@ const styles = StyleSheet.create({
    },
    hero: {
       gap: 8,
-      marginTop: 32,
+      marginTop: 24,
    },
    heroBody: {
       color: "#5a7560",
-      fontSize: 14,
-      lineHeight: 21,
+      fontSize: 15,
+      lineHeight: 22,
       marginTop: 4,
    },
    heroEyebrow: {
@@ -283,22 +229,6 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.08,
       shadowRadius: 14,
    },
-   legal: {
-      color: "#8fa893",
-      fontSize: 11,
-      textAlign: "center",
-   },
-   nav: {
-      alignItems: "center",
-      flexDirection: "row",
-      gap: 10,
-   },
-   navBrand: {
-      color: "#102016",
-      fontSize: 13,
-      fontWeight: "900",
-      letterSpacing: 2,
-   },
    orLine: {
       backgroundColor: "rgba(16,32,22,0.12)",
       flex: 1,
@@ -307,35 +237,38 @@ const styles = StyleSheet.create({
    orSection: {
       alignItems: "center",
       flexDirection: "row",
-      gap: 14,
-      marginVertical: 6,
+      gap: 12,
    },
    orText: {
       color: "#6b8a6f",
-      fontSize: 13,
-      fontWeight: "600",
+      fontSize: 12,
+      fontWeight: "800",
    },
    primaryButton: {
       alignItems: "center",
       backgroundColor: "#102016",
-      borderRadius: 26,
+      borderRadius: 24,
       flexDirection: "row",
-      gap: 10,
-      height: 52,
+      height: 48,
       justifyContent: "center",
-      marginTop: 8,
+      marginTop: 2,
    },
    primaryButtonText: {
       color: "#ffffff",
       fontSize: 16,
-      fontWeight: "800",
+      fontWeight: "900",
+   },
+   screen: {
+      backgroundColor: "#f4f9f2",
+      flex: 1,
+      overflow: "hidden",
    },
    trailLine: {
       backgroundColor: "rgba(134,231,184,0.4)",
       height: 100,
       left: 56,
       position: "absolute",
-      top: 180,
+      top: 186,
       transform: [{ rotate: "25deg" }],
       width: 2,
    },
@@ -346,7 +279,7 @@ const styles = StyleSheet.create({
       left: 44,
       opacity: 0.7,
       position: "absolute",
-      top: 170,
+      top: 176,
       width: 10,
    },
    waypointB: {
@@ -356,17 +289,7 @@ const styles = StyleSheet.create({
       left: 68,
       opacity: 0.5,
       position: "absolute",
-      top: 280,
+      top: 286,
       width: 8,
-   },
-   waypointC: {
-      backgroundColor: palette.leaf,
-      borderRadius: 3,
-      height: 6,
-      left: 30,
-      opacity: 0.6,
-      position: "absolute",
-      top: 340,
-      width: 6,
    },
 });
