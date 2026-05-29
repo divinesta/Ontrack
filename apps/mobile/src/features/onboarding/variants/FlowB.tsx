@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { provisionalGreenPalette } from "@/theme";
+import { provisionalGreenPalette, useResponsiveMetrics } from "@/theme";
 
 import { SignupImageStage, WelcomeImageStage } from "./OnboardingImages";
 
@@ -37,6 +37,7 @@ type OnboardingFlowBProps = {
 
 export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProps) {
    const router = useRouter();
+   const r = useResponsiveMetrics();
    const [step, setStep] = useState<Step>(initialStep);
    const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -85,11 +86,11 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
 
          {step === "welcome" && (
             <View style={s.mediaScreen}>
-               <WelcomeImageStage activeSlide={activeSlide} label="Progress log" tone="bold" size="cover" />
-               <View style={s.welcomeBottom}>
-                  <Text style={s.heroTitle}>Progress Tracker{"\n"}with a calmer rhythm.</Text>
+               <WelcomeImageStage activeSlide={activeSlide} height={r.heroImageHeight} label="Progress log" tone="bold" size="cover" />
+               <View style={[s.welcomeBottom, { bottom: r.moderateVerticalScale(22), left: r.contentPaddingX, right: r.contentPaddingX }]}>
+                  <Text style={[s.heroTitle, { fontSize: r.titleSize, lineHeight: r.moderateScale(r.titleSize + 5) }]}>Progress Tracker{"\n"}with a calmer rhythm.</Text>
                   <Text style={s.heroBody}>Your all-in-one productivity companion.</Text>
-                  <Pressable style={s.primaryButton} onPress={next}>
+                  <Pressable style={[s.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]} onPress={next}>
                      <Text style={s.primaryButtonText}>Get Started</Text>
                   </Pressable>
                   <Pressable hitSlop={12} onPress={() => router.push("/sign-in")} style={s.linkWrap}>
@@ -100,9 +101,9 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
          )}
 
          {step === "needs" && (
-            <View style={s.plainScreen}>
+            <View style={[s.plainScreen, { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(46) }]}>
                <View>
-                  <Text style={s.title}>What’s your biggest{"\n"}need right now?</Text>
+                  <Text style={[s.title, { fontSize: r.titleSize, lineHeight: r.moderateScale(r.titleSize + 6) }]}>What’s your biggest{"\n"}need right now?</Text>
                   <Text style={s.body}>Pick what you most need help with in your daily life.</Text>
                   <View style={s.needsList}>
                      {needs.map(({ key, label }) => {
@@ -116,16 +117,16 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
                      })}
                   </View>
                </View>
-               <Pressable style={s.primaryButton} onPress={next}>
+               <Pressable style={[s.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]} onPress={next}>
                   <Text style={s.primaryButtonText}>Continue</Text>
                </Pressable>
             </View>
          )}
 
          {step === "categories" && (
-            <View style={s.plainScreen}>
+            <View style={[s.plainScreen, { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(46) }]}>
                <View>
-                  <Text style={s.title}>What do you want{"\n"}to track?</Text>
+                  <Text style={[s.title, { fontSize: r.titleSize, lineHeight: r.moderateScale(r.titleSize + 6) }]}>What do you want{"\n"}to track?</Text>
                   <Text style={s.body}>Choose 3-5 areas. Defaults are ready if you skip.</Text>
                   <View style={s.emojiGrid}>
                      {categories.map(({ emoji, label }) => {
@@ -139,16 +140,16 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
                      })}
                   </View>
                </View>
-               <Pressable disabled={!canContinueCategories} style={[s.primaryButton, !canContinueCategories && s.primaryButtonDisabled]} onPress={next}>
+               <Pressable disabled={!canContinueCategories} style={[s.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }, !canContinueCategories && s.primaryButtonDisabled]} onPress={next}>
                   <Text style={s.primaryButtonText}>{canContinueCategories ? "Continue" : "Choose at least 3"}</Text>
                </Pressable>
             </View>
          )}
 
          {step === "notifications" && (
-            <View style={s.plainScreen}>
+            <View style={[s.plainScreen, { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(46) }]}>
                <View style={s.notificationTop}>
-                  <Text style={s.title}>Gentle nudges,{"\n"}not noise</Text>
+                  <Text style={[s.title, { fontSize: r.titleSize, lineHeight: r.moderateScale(r.titleSize + 6) }]}>Gentle nudges,{"\n"}not noise</Text>
                   <Text style={s.body}>A morning plan and evening reflection. You can adjust both later.</Text>
                   <View style={s.reminders}>
                      <View style={s.reminderCard}>
@@ -163,15 +164,15 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
                      </View>
                   </View>
                </View>
-               <Pressable style={s.primaryButton} onPress={next}>
+               <Pressable style={[s.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]} onPress={next}>
                   <Text style={s.primaryButtonText}>Enable Notifications</Text>
                </Pressable>
             </View>
          )}
 
          {step === "pricing" && (
-            <View style={s.priceScreen}>
-               <Text style={s.priceTitle}>Start simple.{"\n"}Grow when ready.</Text>
+            <View style={[s.priceScreen, { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.smallWidth ? 20 : 24, paddingTop: r.moderateVerticalScale(48) }]}>
+               <Text style={[s.priceTitle, { fontSize: r.smallWidth ? 34 : 39, lineHeight: r.smallWidth ? 41 : 47 }]}>Start simple.{"\n"}Grow when ready.</Text>
                <View style={s.planRow}>
                   <View style={s.planCard}>
                      <Text style={s.planName}>Monthly</Text>
@@ -191,7 +192,7 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
                   <Text style={s.reviewText}>“Finally, a calm place for plans, logs, and reflection.”</Text>
                </View>
                <View>
-                  <Pressable style={s.trialButton} onPress={next}>
+                  <Pressable style={[s.trialButton, { height: r.compact ? 52 : 56 }]} onPress={next}>
                      <Text style={s.trialButtonText}>Start 7 days free trial</Text>
                   </Pressable>
                   <Text style={s.trialFinePrint}>7 days free, then $20/yr. Cancel anytime.</Text>
@@ -201,16 +202,16 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
 
          {step === "signup" && (
             <View style={s.mediaScreen}>
-               <SignupImageStage activeSlide={activeSlide} tone="bold" size="cover" />
-               <View style={s.signupBottom}>
-                  <Text style={s.title}>Sign up to OnTrack</Text>
+               <SignupImageStage activeSlide={activeSlide} height={r.heroImageHeight} tone="bold" size="cover" />
+               <View style={[s.signupBottom, { bottom: r.moderateVerticalScale(24), left: r.contentPaddingX, right: r.contentPaddingX }]}>
+                  <Text style={[s.title, { fontSize: r.titleSize, lineHeight: r.moderateScale(r.titleSize + 6) }]}>Sign up to OnTrack</Text>
                   <Text style={s.body}>One account to keep everything in sync.</Text>
                   <View style={s.authBtns}>
-                     <Pressable style={s.googleBtn}>
+                     <Pressable style={[s.googleBtn, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
                         <Text style={s.gIcon}>G</Text>
                         <Text style={s.gText}>Continue with Google</Text>
                      </Pressable>
-                     <Pressable style={s.emailBtn} onPress={() => router.push("/sign-up")}>
+                     <Pressable style={[s.emailBtn, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]} onPress={() => router.push("/sign-up")}>
                         <Text style={s.emailBtnText}>Sign up with email</Text>
                      </Pressable>
                   </View>

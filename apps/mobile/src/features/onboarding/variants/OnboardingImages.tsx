@@ -19,6 +19,7 @@ const signupImages = [
 type ImageStageProps = {
    activeSlide: number;
    compact?: boolean;
+   height?: number;
    label?: string;
    size?: "medium" | "cover";
    tone?: "soft" | "bold" | "clean";
@@ -27,12 +28,13 @@ type ImageStageProps = {
 export function WelcomeImageStage({
    activeSlide,
    compact = false,
+   height,
    label = "Today",
    size,
    tone = "soft",
 }: ImageStageProps) {
    return (
-      <View style={[styles.stage, compact && styles.stageCompact, size === "cover" && styles.stageCover, tone === "bold" && styles.stageBold]}>
+      <View style={[styles.stage, compact && styles.stageCompact, size === "cover" && styles.stageCover, height ? { height } : null, tone === "bold" && styles.stageBold]}>
          {welcomeImages.map((uri, index) => (
             <Image
                key={uri}
@@ -51,9 +53,9 @@ export function WelcomeImageStage({
    );
 }
 
-export function SignupImageStage({ activeSlide, compact = false, size, tone = "soft" }: ImageStageProps) {
+export function SignupImageStage({ activeSlide, compact = false, height, size, tone = "soft" }: ImageStageProps) {
    return (
-      <View style={[styles.signupStage, compact && styles.signupStageCompact, size === "cover" && styles.signupStageCover, size === "medium" && styles.signupStageMedium, tone === "bold" && styles.stageBold]}>
+      <View style={[styles.signupStage, compact && styles.signupStageCompact, size === "cover" && styles.signupStageCover, size === "medium" && styles.signupStageMedium, height ? { height } : null, tone === "bold" && styles.stageBold]}>
          {signupImages.map((uri, index) => (
             <Image
                key={uri}

@@ -2,12 +2,13 @@ import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { provisionalGreenPalette } from "@/theme";
+import { provisionalGreenPalette, useResponsiveMetrics } from "@/theme";
 
 const palette = provisionalGreenPalette;
 
 export function Login() {
    const router = useRouter();
+   const r = useResponsiveMetrics();
 
    return (
       <SafeAreaView style={styles.screen}>
@@ -19,7 +20,7 @@ export function Login() {
          <View style={styles.waypointB} />
          <View style={styles.trailLine} />
 
-         <View style={styles.content}>
+         <View style={[styles.content, { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(24) }]}>
             <View>
                <Pressable hitSlop={12} onPress={() => router.push("/?step=signup")} style={styles.backButton}>
                   <Text style={styles.backText}>‹</Text>
@@ -27,13 +28,13 @@ export function Login() {
 
                <View style={styles.hero}>
                   <Text style={styles.heroEyebrow}>CONTINUE YOUR JOURNEY</Text>
-                  <Text style={styles.heroTitle}>Sign in</Text>
+                  <Text style={[styles.heroTitle, { fontSize: r.smallWidth ? 34 : 38 }]}>Sign in</Text>
                   <Text style={styles.heroBody}>Pick up where you left off. Your tasks, reflections, and progress are waiting.</Text>
                </View>
             </View>
 
             <View style={styles.form}>
-               <Pressable style={styles.googleButton}>
+               <Pressable style={[styles.googleButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
                   <Text style={styles.googleIcon}>G</Text>
                   <Text style={styles.googleButtonText}>Continue with Google</Text>
                </Pressable>
@@ -44,15 +45,15 @@ export function Login() {
                   <View style={styles.orLine} />
                </View>
 
-               <View style={styles.inputWrap}>
+               <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
                   <TextInput autoCapitalize="none" keyboardType="email-address" placeholder="E-mail" placeholderTextColor="#6b8a6f" style={styles.input} />
                </View>
 
-               <View style={styles.inputWrap}>
+               <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
                   <TextInput placeholder="Password" placeholderTextColor="#6b8a6f" secureTextEntry style={styles.input} />
                </View>
 
-               <Pressable style={styles.primaryButton}>
+               <Pressable style={[styles.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
                   <Text style={styles.primaryButtonText}>Continue</Text>
                   <View style={styles.buttonArrow}>
                      <Text style={styles.arrowText}>→</Text>
