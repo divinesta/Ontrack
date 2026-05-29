@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { KeyboardAwareScreen } from "@/components/ui";
 import { provisionalGreenPalette, useResponsiveMetrics } from "@/theme";
 
 const palette = provisionalGreenPalette;
@@ -11,7 +11,13 @@ export function Login() {
    const r = useResponsiveMetrics();
 
    return (
-      <SafeAreaView style={styles.screen}>
+      <KeyboardAwareScreen
+         contentContainerStyle={[
+            styles.content,
+            { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(24) },
+         ]}
+         style={styles.screen}
+      >
          <View style={styles.contourOne} />
          <View style={styles.contourTwo} />
          <View style={styles.contourThree} />
@@ -20,57 +26,55 @@ export function Login() {
          <View style={styles.waypointB} />
          <View style={styles.trailLine} />
 
-         <View style={[styles.content, { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(24) }]}>
-            <View>
-               <Pressable hitSlop={12} onPress={() => router.push("/?step=signup")} style={styles.backButton}>
-                  <Text style={styles.backText}>‹</Text>
-               </Pressable>
+         <View>
+            <Pressable hitSlop={12} onPress={() => router.push("/?step=signup")} style={styles.backButton}>
+               <Text style={styles.backText}>‹</Text>
+            </Pressable>
 
-               <View style={styles.hero}>
-                  <Text style={styles.heroEyebrow}>CONTINUE YOUR JOURNEY</Text>
-                  <Text style={[styles.heroTitle, { fontSize: r.smallWidth ? 34 : 38 }]}>Sign in</Text>
-                  <Text style={styles.heroBody}>Pick up where you left off. Your tasks, reflections, and progress are waiting.</Text>
-               </View>
-            </View>
-
-            <View style={styles.form}>
-               <Pressable style={[styles.googleButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
-                  <Text style={styles.googleIcon}>G</Text>
-                  <Text style={styles.googleButtonText}>Continue with Google</Text>
-               </Pressable>
-
-               <View style={styles.orSection}>
-                  <View style={styles.orLine} />
-                  <Text style={styles.orText}>Sign in with Google or Email</Text>
-                  <View style={styles.orLine} />
-               </View>
-
-               <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
-                  <TextInput autoCapitalize="none" keyboardType="email-address" placeholder="E-mail" placeholderTextColor="#6b8a6f" style={styles.input} />
-               </View>
-
-               <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
-                  <TextInput placeholder="Password" placeholderTextColor="#6b8a6f" secureTextEntry style={styles.input} />
-               </View>
-
-               <Pressable style={[styles.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
-                  <Text style={styles.primaryButtonText}>Continue</Text>
-                  <View style={styles.buttonArrow}>
-                     <Text style={styles.arrowText}>→</Text>
-                  </View>
-               </Pressable>
-
-               <View style={styles.footer}>
-                  <Pressable hitSlop={12}>
-                     <Text style={styles.footerLink}>Reset password</Text>
-                  </Pressable>
-                  <Pressable hitSlop={12} onPress={() => router.push("/")}>
-                     <Text style={styles.footerLink}>Create new account</Text>
-                  </Pressable>
-               </View>
+            <View style={styles.hero}>
+               <Text style={styles.heroEyebrow}>CONTINUE YOUR JOURNEY</Text>
+               <Text style={[styles.heroTitle, { fontSize: r.smallWidth ? 34 : 38 }]}>Sign in</Text>
+               <Text style={styles.heroBody}>Pick up where you left off. Your tasks, reflections, and progress are waiting.</Text>
             </View>
          </View>
-      </SafeAreaView>
+
+         <View style={styles.form}>
+            <Pressable style={[styles.googleButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
+               <Text style={styles.googleIcon}>G</Text>
+               <Text style={styles.googleButtonText}>Continue with Google</Text>
+            </Pressable>
+
+            <View style={styles.orSection}>
+               <View style={styles.orLine} />
+               <Text style={styles.orText}>Sign in with Google or Email</Text>
+               <View style={styles.orLine} />
+            </View>
+
+            <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
+               <TextInput autoCapitalize="none" keyboardType="email-address" placeholder="E-mail" placeholderTextColor="#6b8a6f" style={styles.input} />
+            </View>
+
+            <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
+               <TextInput placeholder="Password" placeholderTextColor="#6b8a6f" secureTextEntry style={styles.input} />
+            </View>
+
+            <Pressable style={[styles.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]} onPress={() => router.replace("/(tabs)/today")}>
+               <Text style={styles.primaryButtonText}>Continue</Text>
+               <View style={styles.buttonArrow}>
+                  <Text style={styles.arrowText}>→</Text>
+               </View>
+            </Pressable>
+
+            <View style={styles.footer}>
+               <Pressable hitSlop={12}>
+                  <Text style={styles.footerLink}>Reset password</Text>
+               </Pressable>
+               <Pressable hitSlop={12} onPress={() => router.push("/")}>
+                  <Text style={styles.footerLink}>Create new account</Text>
+               </Pressable>
+            </View>
+         </View>
+      </KeyboardAwareScreen>
    );
 }
 

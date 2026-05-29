@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { KeyboardAwareScreen } from "@/components/ui";
 import { provisionalGreenPalette, useResponsiveMetrics } from "@/theme";
 
 const palette = provisionalGreenPalette;
@@ -11,7 +11,13 @@ export function SignUp() {
    const r = useResponsiveMetrics();
 
    return (
-      <SafeAreaView style={styles.screen}>
+      <KeyboardAwareScreen
+         contentContainerStyle={[
+            styles.content,
+            { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(26) },
+         ]}
+         style={styles.screen}
+      >
          <View style={styles.contourOne} />
          <View style={styles.contourTwo} />
          <View style={styles.contourThree} />
@@ -20,43 +26,41 @@ export function SignUp() {
          <View style={styles.waypointB} />
          <View style={styles.trailLine} />
 
-         <View style={[styles.content, { paddingBottom: r.moderateVerticalScale(30), paddingHorizontal: r.contentPaddingX, paddingTop: r.moderateVerticalScale(26) }]}>
-            <View>
-               <Pressable hitSlop={12} onPress={() => router.push("/?step=signup")} style={styles.backButton}>
-                  <Text style={styles.backText}>‹</Text>
-               </Pressable>
+         <View>
+            <Pressable hitSlop={12} onPress={() => router.push("/?step=signup")} style={styles.backButton}>
+               <Text style={styles.backText}>‹</Text>
+            </Pressable>
 
-               <View style={styles.hero}>
-                  <Text style={styles.heroEyebrow}>BEGIN YOUR JOURNEY</Text>
-                  <Text style={[styles.heroTitle, { fontSize: r.smallWidth ? 32 : 36, lineHeight: r.smallWidth ? 38 : 42 }]}>Sign up with email</Text>
-                  <Text style={styles.heroBody}>Create your account to save your plans, logs, and reflections.</Text>
-               </View>
-            </View>
-
-            <View style={styles.form}>
-               <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
-                  <TextInput autoCapitalize="words" placeholder="Name" placeholderTextColor="#6b8a6f" style={styles.input} />
-               </View>
-               <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
-                  <TextInput autoCapitalize="none" keyboardType="email-address" placeholder="E-mail" placeholderTextColor="#6b8a6f" style={styles.input} />
-               </View>
-               <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
-                  <TextInput placeholder="Password" placeholderTextColor="#6b8a6f" secureTextEntry style={styles.input} />
-               </View>
-
-               <Pressable style={[styles.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
-                  <Text style={styles.primaryButtonText}>Continue</Text>
-                  <View style={styles.buttonArrow}>
-                     <Text style={styles.arrowText}>→</Text>
-                  </View>
-               </Pressable>
-
-               <Pressable hitSlop={12} onPress={() => router.push("/sign-in")} style={styles.footerPressable}>
-                  <Text style={styles.footerText}>Already have an account? <Text style={styles.footerLink}>Sign in</Text></Text>
-               </Pressable>
+            <View style={styles.hero}>
+               <Text style={styles.heroEyebrow}>BEGIN YOUR JOURNEY</Text>
+               <Text style={[styles.heroTitle, { fontSize: r.smallWidth ? 32 : 36, lineHeight: r.smallWidth ? 38 : 42 }]}>Sign up with email</Text>
+               <Text style={styles.heroBody}>Create your account to save your plans, logs, and reflections.</Text>
             </View>
          </View>
-      </SafeAreaView>
+
+         <View style={styles.form}>
+            <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
+               <TextInput autoCapitalize="words" placeholder="Name" placeholderTextColor="#6b8a6f" style={styles.input} />
+            </View>
+            <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
+               <TextInput autoCapitalize="none" keyboardType="email-address" placeholder="E-mail" placeholderTextColor="#6b8a6f" style={styles.input} />
+            </View>
+            <View style={[styles.inputWrap, { height: r.moderateVerticalScale(52) }]}>
+               <TextInput placeholder="Password" placeholderTextColor="#6b8a6f" secureTextEntry style={styles.input} />
+            </View>
+
+            <Pressable style={[styles.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]}>
+               <Text style={styles.primaryButtonText}>Continue</Text>
+               <View style={styles.buttonArrow}>
+                  <Text style={styles.arrowText}>→</Text>
+               </View>
+            </Pressable>
+
+            <Pressable hitSlop={12} onPress={() => router.push("/sign-in")} style={styles.footerPressable}>
+               <Text style={styles.footerText}>Already have an account? <Text style={styles.footerLink}>Sign in</Text></Text>
+            </Pressable>
+         </View>
+      </KeyboardAwareScreen>
    );
 }
 
