@@ -13,7 +13,7 @@ type TabItem = {
 
 const TABS: TabItem[] = [
   { name: "today",    route: "/(tabs)/today",    icon: "today-outline",      iconActive: "today" },
-  { name: "capture",  route: "/(tabs)/capture",  icon: "mic-outline",        iconActive: "mic" },
+  { name: "capture",  route: "/(tabs)/capture",  icon: "journal-outline",    iconActive: "journal" },
   { name: "review",   route: "/(tabs)/review",   icon: "bar-chart-outline",  iconActive: "bar-chart" },
   { name: "settings", route: "/(tabs)/settings", icon: "settings-outline",   iconActive: "settings" },
 ];
@@ -22,6 +22,11 @@ function FloatingTabBar() {
   const router = useRouter();
   const pathname = usePathname();
   const { insets } = useResponsiveMetrics();
+  const isCapture = pathname.includes("capture");
+
+  if (isCapture) {
+    return null;
+  }
 
   return (
     <View style={[b.wrap, { bottom: Math.max(insets.bottom, 8) + 10 }]}>

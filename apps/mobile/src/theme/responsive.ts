@@ -56,10 +56,24 @@ export function useResponsiveMetrics() {
     const tall = sizeClass === "tall";
     const smallWidth = width < 380;
     const scaleTools = createResponsiveScale(width, height);
+    const captureComposerHeight = compact ? scaleTools.moderateScale(54) : scaleTools.moderateScale(58);
+    const captureComposerVerticalPadding = scaleTools.moderateScale(10);
+    const captureFloatingGap = scaleTools.moderateScale(16);
+    const captureTabSize = scaleTools.moderateScale(44);
 
     return {
       ...scaleTools,
       buttonHeight: compact ? 44 : 48,
+      captureComposer: {
+        bottomOffset: insets.bottom + captureComposerVerticalPadding,
+        controlHeight: scaleTools.moderateScale(38),
+        floatingTabExpandedExtra: scaleTools.moderateScale(8),
+        floatingTabGap: captureFloatingGap,
+        horizontalPadding: scaleTools.moderateScale(16),
+        rowHeight: captureComposerHeight,
+        tabSize: captureTabSize,
+        verticalPadding: captureComposerVerticalPadding,
+      },
       compact,
       contentPaddingX: smallWidth ? 24 : 32,
       heroImageHeight: clamp(height * (compact ? 0.56 : 0.64), 340, 520),
@@ -73,4 +87,3 @@ export function useResponsiveMetrics() {
     };
   }, [height, insets, width]);
 }
-
