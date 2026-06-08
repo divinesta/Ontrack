@@ -351,7 +351,7 @@ export function TodayC() {
         showsVerticalScrollIndicator={false}
         ListFooterComponent={
           <>
-            <Pressable style={s.addTile} activeOpacity={0.7} onPress={() => setShowCreate(true)}>
+            <Pressable style={s.addTile} onPress={() => setShowCreate(true)}>
               <RNText style={s.addTileText}>+ Add a task</RNText>
             </Pressable>
             <View style={s.rateRow}>
