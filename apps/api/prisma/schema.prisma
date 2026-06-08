@@ -83,6 +83,7 @@ enum reflection_status {
 
 enum ai_usage_feature {
   auto_categorize
+  tracker_extract
   entry_refine
   task_generate
   task_regenerate
@@ -95,18 +96,40 @@ enum ai_usage_status {
   failed
 }
 
+enum tracker_frequency {
+  daily
+  weekly
+  monthly
+  custom
+}
+
+enum tracker_field_type {
+  number
+  currency
+  boolean
+  text
+  rating
+  duration
+  count
+}
+
+enum tracker_record_origin {
+  manual
+  ai
+}
+
 model users {
-  id                      String                @id @default(cuid())
-  email                   String                @unique
+  id                      String            @id @default(cuid())
+  email                   String            @unique
   display_name            String?
   photo_url               String?
   timezone                String?
-  subscription_tier       subscription_tier     @default(free)
-  ai_quota_used_month     Int                   @default(0)
+  subscription_tier       subscription_tier @default(free)
+  ai_quota_used_month     Int               @default(0)
   ai_quota_reset_at       DateTime?
   onboarding_completed_at DateTime?
   created_at              DateTime
-  updated_at              DateTime              @updatedAt
+  updated_at              DateTime          @updatedAt
   deleted_at              DateTime?
 
   admin_model_configs       admin_model_configs[]
@@ -121,6 +144,8 @@ model users {
   subscriptions             subscriptions[]
   task_items                task_items[]
   task_plans                task_plans[]
+  tracker_definitions       tracker_definitions[]
+  tracker_records           tracker_records[]
   user_settings             user_settings?
 }
 
@@ -141,20 +166,20 @@ model auth_accounts {
 }
 
 model subscriptions {
-  id                           String              @id @default(cuid())
-  user_id                      String
-  provider                     String
-  provider_customer_id         String?
-  provider_subscription_id     String?
-  tier                         subscription_tier
-  status                       subscription_status
-  current_period_start         DateTime?
-  current_period_end           DateTime?
-  cancel_at_period_end         Boolean             @default(false)
-  canceled_at                  DateTime?
-  created_at                   DateTime            @default(now())
-  updated_at                   DateTime            @updatedAt
-  deleted_at                   DateTime?
+  id                       String              @id @default(cuid())
+  user_id                  String
+  provider                 String
+  provider_customer_id     String?
+  provider_subscription_id String?
+  tier                     subscription_tier
+  status                   subscription_status
+  current_period_start     DateTime?
+  current_period_end       DateTime?
+  cancel_at_period_end     Boolean             @default(false)
+  canceled_at              DateTime?
+  created_at               DateTime            @default(now())
+  updated_at               DateTime            @updatedAt
+  deleted_at               DateTime?
 
   user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
 
@@ -163,67 +188,70 @@ model subscriptions {
 }
 
 model user_settings {
-  id                             String   @id @default(cuid())
-  user_id                        String   @unique
-  timezone                       String?
-  follow_device_timezone         Boolean  @default(true)
-  morning_reminder_time          String?
-  night_reminder_time            String?
-  follow_up_nudge_count          Int      @default(1)
-  quiet_hours_start              String?
-  quiet_hours_end                String?
-  weekly_reflection_enabled      Boolean  @default(false)
-  monthly_reflection_enabled     Boolean  @default(true)
-  pending_task_reminder_enabled  Boolean  @default(true)
-  created_at                     DateTime @default(now())
-  updated_at                     DateTime @updatedAt
-  deleted_at                     DateTime?
+  id                            String    @id @default(cuid())
+  user_id                       String    @unique
+  timezone                      String?
+  follow_device_timezone        Boolean   @default(true)
+  morning_reminder_time         String?
+  night_reminder_time           String?
+  follow_up_nudge_count         Int       @default(1)
+  quiet_hours_start             String?
+  quiet_hours_end               String?
+  weekly_reflection_enabled     Boolean   @default(false)
+  monthly_reflection_enabled    Boolean   @default(true)
+  pending_task_reminder_enabled Boolean   @default(true)
+  created_at                    DateTime  @default(now())
+  updated_at                    DateTime  @updatedAt
+  deleted_at                    DateTime?
 
   user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
 }
 
 model categories {
-  id          String        @id @default(cuid())
-  user_id     String
-  name        String
-  slug        String
-  kind        category_kind @default(user)
-  is_hidden   Boolean       @default(false)
-  is_default  Boolean       @default(false)
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-  deleted_at  DateTime?
+  id         String        @id @default(cuid())
+  user_id    String
+  name       String
+  slug       String
+  kind       category_kind @default(user)
+  is_hidden  Boolean       @default(false)
+  is_default Boolean       @default(false)
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+  deleted_at DateTime?
 
-  user       users       @relation(fields: [user_id], references: [id], onDelete: Restrict)
-  entries    entries[]
-  task_items task_items[]
+  user                users                 @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  entries             entries[]
+  task_items          task_items[]
+  tracker_definitions tracker_definitions[]
+  tracker_records     tracker_records[]
 
   @@unique([user_id, slug])
   @@index([user_id])
 }
 
 model entries {
-  id              String           @id @default(cuid())
-  user_id         String
-  category_id     String?
-  entry_date      DateTime
-  status          entry_status
-  input_type      entry_input_type
-  source_text     String?
-  raw_transcript  String?
-  refined_text    String?
-  final_text      String?
-  used_ai_refine  Boolean          @default(false)
-  ai_request_id   String?
-  is_backdated    Boolean          @default(false)
-  created_at      DateTime
-  ingested_at     DateTime         @default(now())
-  updated_at      DateTime         @updatedAt
-  deleted_at      DateTime?
+  id             String           @id @default(cuid())
+  user_id        String
+  category_id    String?
+  entry_date     DateTime
+  status         entry_status
+  input_type     entry_input_type
+  source_text    String?
+  raw_transcript String?
+  refined_text   String?
+  final_text     String?
+  used_ai_refine Boolean          @default(false)
+  ai_request_id  String?
+  is_backdated   Boolean          @default(false)
+  created_at     DateTime
+  ingested_at    DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  deleted_at     DateTime?
 
-  category    categories?   @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  user        users         @relation(fields: [user_id], references: [id], onDelete: Restrict)
-  entry_audio entry_audio?
+  category        categories?       @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  user            users             @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  entry_audio     entry_audio?
+  tracker_records tracker_records[]
 
   @@index([user_id, entry_date])
   @@index([category_id])
@@ -231,17 +259,94 @@ model entries {
 }
 
 model entry_audio {
-  id               String   @id @default(cuid())
-  entry_id         String   @unique
+  id               String    @id @default(cuid())
+  entry_id         String    @unique
   storage_key      String
   mime_type        String
   duration_seconds Int?
   file_size_bytes  Int?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
   deleted_at       DateTime?
 
   entry entries @relation(fields: [entry_id], references: [id], onDelete: Restrict)
+}
+
+model tracker_definitions {
+  id               String            @id @default(cuid())
+  user_id          String
+  category_id      String
+  name             String
+  slug             String
+  description      String?
+  frequency        tracker_frequency
+  frequency_config Json?
+  is_active        Boolean           @default(true)
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  deleted_at       DateTime?
+
+  category categories        @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  fields   tracker_fields[]
+  records  tracker_records[]
+  user     users             @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@unique([user_id, slug])
+  @@index([user_id])
+  @@index([category_id])
+  @@index([frequency])
+  @@index([is_active])
+}
+
+model tracker_fields {
+  id                    String             @id @default(cuid())
+  tracker_definition_id String
+  key                   String
+  label                 String
+  type                  tracker_field_type
+  unit                  String?
+  required              Boolean            @default(false)
+  sort_order            Int                @default(0)
+  config_json           Json?
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @updatedAt
+  deleted_at            DateTime?
+
+  tracker_definition tracker_definitions @relation(fields: [tracker_definition_id], references: [id], onDelete: Restrict)
+
+  @@unique([tracker_definition_id, key])
+  @@index([tracker_definition_id])
+  @@index([type])
+}
+
+model tracker_records {
+  id                    String                @id @default(cuid())
+  user_id               String
+  tracker_definition_id String
+  category_id           String
+  source_entry_id       String?
+  record_date           DateTime
+  values                Json
+  note                  String?
+  origin                tracker_record_origin
+  ai_request_id         String?
+  confidence            Float?
+  created_at            DateTime
+  ingested_at           DateTime              @default(now())
+  updated_at            DateTime              @updatedAt
+  deleted_at            DateTime?
+
+  category           categories          @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  source_entry       entries?            @relation(fields: [source_entry_id], references: [id], onDelete: SetNull)
+  tracker_definition tracker_definitions @relation(fields: [tracker_definition_id], references: [id], onDelete: Restrict)
+  user               users               @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@index([user_id, record_date])
+  @@index([tracker_definition_id, record_date])
+  @@index([category_id])
+  @@index([source_entry_id])
+  @@index([origin])
+  @@index([ai_request_id])
 }
 
 model task_plans {
@@ -259,7 +364,7 @@ model task_plans {
   updated_at        DateTime         @updatedAt
   deleted_at        DateTime?
 
-  user       users       @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user       users        @relation(fields: [user_id], references: [id], onDelete: Restrict)
   task_items task_items[]
 
   @@unique([user_id, plan_date])
@@ -267,29 +372,29 @@ model task_plans {
 }
 
 model task_items {
-  id                   String                 @id
-  user_id              String
-  task_plan_id         String?
-  category_id          String?
-  task_date            DateTime
-  title                String
-  notes                String?
-  status               task_item_status       @default(pending)
-  sort_order           Int                    @default(0)
-  origin               task_origin
-  starts_at            DateTime?
-  ends_at              DateTime?
-  is_all_day           Boolean                @default(true)
-  source_timezone      String?
-  created_at           DateTime
-  ingested_at          DateTime               @default(now())
-  updated_at           DateTime               @updatedAt
-  deleted_at           DateTime?
+  id              String           @id
+  user_id         String
+  task_plan_id    String?
+  category_id     String?
+  task_date       DateTime
+  title           String
+  notes           String?
+  status          task_item_status @default(pending)
+  sort_order      Int              @default(0)
+  origin          task_origin
+  starts_at       DateTime?
+  ends_at         DateTime?
+  is_all_day      Boolean          @default(true)
+  source_timezone String?
+  created_at      DateTime
+  ingested_at     DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+  deleted_at      DateTime?
 
-  category                 categories?               @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  user                     users                     @relation(fields: [user_id], references: [id], onDelete: Restrict)
-  task_plan                task_plans?               @relation(fields: [task_plan_id], references: [id], onDelete: SetNull)
-  imported_calendar_event  imported_calendar_events?
+  category                categories?               @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  user                    users                     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  task_plan               task_plans?               @relation(fields: [task_plan_id], references: [id], onDelete: SetNull)
+  imported_calendar_event imported_calendar_events?
 
   @@index([user_id, task_date])
   @@index([task_plan_id])
@@ -299,18 +404,18 @@ model task_items {
 }
 
 model calendar_connections {
-  id                     String      @id @default(cuid())
+  id                     String        @id @default(cuid())
   user_id                String
   provider               import_source
   provider_account_email String?
   access_token           String?
   refresh_token          String?
   token_expires_at       DateTime?
-  connected_at           DateTime    @default(now())
+  connected_at           DateTime      @default(now())
   disconnected_at        DateTime?
   last_synced_at         DateTime?
-  created_at             DateTime    @default(now())
-  updated_at             DateTime    @updatedAt
+  created_at             DateTime      @default(now())
+  updated_at             DateTime      @updatedAt
   deleted_at             DateTime?
 
   user                     users                      @relation(fields: [user_id], references: [id], onDelete: Restrict)
@@ -320,25 +425,25 @@ model calendar_connections {
 }
 
 model imported_calendar_events {
-  id                         String               @id @default(cuid())
-  user_id                    String
-  calendar_connection_id     String
-  task_item_id               String               @unique
-  provider                   import_source
-  provider_calendar_id       String?
-  provider_event_id          String
+  id                          String               @id @default(cuid())
+  user_id                     String
+  calendar_connection_id      String
+  task_item_id                String               @unique
+  provider                    import_source
+  provider_calendar_id        String?
+  provider_event_id           String
   provider_recurring_event_id String?
-  provider_occurrence_start  DateTime?
-  state                      imported_event_state @default(active)
-  raw_payload                Json?
-  last_seen_at               DateTime?
-  created_at                 DateTime             @default(now())
-  updated_at                 DateTime             @updatedAt
-  deleted_at                 DateTime?
+  provider_occurrence_start   DateTime?
+  state                       imported_event_state @default(active)
+  raw_payload                 Json?
+  last_seen_at                DateTime?
+  created_at                  DateTime             @default(now())
+  updated_at                  DateTime             @updatedAt
+  deleted_at                  DateTime?
 
   calendar_connection calendar_connections @relation(fields: [calendar_connection_id], references: [id], onDelete: Restrict)
-  task_item            task_items            @relation(fields: [task_item_id], references: [id], onDelete: Restrict)
-  user                 users                 @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  task_item           task_items           @relation(fields: [task_item_id], references: [id], onDelete: Restrict)
+  user                users                @relation(fields: [user_id], references: [id], onDelete: Restrict)
 
   @@unique([provider, provider_event_id, provider_occurrence_start])
   @@index([user_id])
@@ -385,17 +490,17 @@ model reflection_summary_caches {
 }
 
 model ai_usage_events {
-  id                  String           @id @default(cuid())
-  user_id             String
-  ai_request_id       String?
-  feature             ai_usage_feature
-  status              ai_usage_status
-  provider            String?
-  model               String?
-  count_toward_quota  Boolean          @default(false)
-  created_at          DateTime         @default(now())
-  updated_at          DateTime         @updatedAt
-  deleted_at          DateTime?
+  id                 String           @id @default(cuid())
+  user_id            String
+  ai_request_id      String?
+  feature            ai_usage_feature
+  status             ai_usage_status
+  provider           String?
+  model              String?
+  count_toward_quota Boolean          @default(false)
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @updatedAt
+  deleted_at         DateTime?
 
   user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
 
@@ -404,16 +509,16 @@ model ai_usage_events {
 }
 
 model admin_model_configs {
-  id                     String   @id @default(cuid())
-  provider               String
-  model_name             String
-  is_active              Boolean  @default(false)
-  config_json            Json
+  id                      String    @id @default(cuid())
+  provider                String
+  model_name              String
+  is_active               Boolean   @default(false)
+  config_json             Json
   rollback_from_config_id String?
-  created_by_user_id     String
-  created_at             DateTime @default(now())
-  updated_at             DateTime @updatedAt
-  deleted_at             DateTime?
+  created_by_user_id      String
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
+  deleted_at              DateTime?
 
   created_by_user users @relation(fields: [created_by_user_id], references: [id], onDelete: Restrict)
 
