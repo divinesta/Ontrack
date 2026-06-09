@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-import { KeyboardAwareScreen } from "@/components/ui";
+import { AutoGrowingTextInput, KeyboardAwareScreen } from "@/components/ui";
 import { useResponsiveMetrics } from "@/theme";
 import { createMockEntry, simulateProcessing, simulateRefine, simulateSave } from "../mock";
 import { palette as C } from "../colors";
@@ -242,6 +242,10 @@ export function JournalB() {
     router.push(route as any);
   }, [navExpandAnim, router]);
 
+  const handleOpenTrackers = useCallback(() => {
+    router.push("/settings/trackers" as any);
+  }, [router]);
+
   const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => (
     <View style={{ marginTop: ms(18) }}>
       <View style={[b.entryHeader, { gap: ms(8), marginBottom: ms(8) }]}>
@@ -307,7 +311,14 @@ export function JournalB() {
               <RNText style={[b.streakText, { fontSize: ms(13) }]}>7</RNText>
             </View>
             <Pressable
-              style={[b.calendarBtn, { width: ms(36), height: ms(36), borderRadius: ms(12) }]}
+              style={[b.headerIconBtn, { width: ms(36), height: ms(36), borderRadius: ms(12) }]}
+              onPress={handleOpenTrackers}
+              hitSlop={6}
+            >
+              <Ionicons name="shapes-outline" size={ms(18)} color={C.text} />
+            </Pressable>
+            <Pressable
+              style={[b.headerIconBtn, { width: ms(36), height: ms(36), borderRadius: ms(12) }]}
               onPress={() => setCalendarVisible(true)}
               hitSlop={6}
             >
@@ -402,8 +413,8 @@ export function JournalB() {
             },
           ]}
         >
-          <View style={[b.inputContent, { height: composerControlHeight, gap: ms(8) }]}>
-            <View style={[b.inputSlot, { height: composerControlHeight }]}>
+          <View style={[b.inputContent, { minHeight: composerControlHeight, gap: ms(8) }]}>
+            <View style={[b.inputSlot, { minHeight: composerControlHeight }]}>
               {showPlaceholder && (
                 <Pressable style={b.placeholderPressable} onPress={() => inputRef.current?.focus()}>
                   <RNText style={[b.inputPlaceholder, { fontSize: ms(15), lineHeight: ms(20) }]}>
@@ -411,16 +422,16 @@ export function JournalB() {
                   </RNText>
                 </Pressable>
               )}
-              <TextInput
+              <AutoGrowingTextInput
                 ref={inputRef}
-                style={[b.input, { fontSize: ms(15), lineHeight: ms(20), height: composerControlHeight }]}
+                style={[b.input, { fontSize: ms(15), lineHeight: ms(20) }]}
+                minHeight={composerControlHeight}
+                maxHeightMultiplier={4}
                 value={inputText}
                 onBlur={() => setInputFocused(false)}
                 onChangeText={setInputText}
                 onFocus={() => setInputFocused(true)}
-                multiline
                 maxLength={2000}
-                scrollEnabled
               />
             </View>
             <Pressable
@@ -448,7 +459,7 @@ const b = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.bg },
   headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   headerActions: { flexDirection: "row", alignItems: "center" },
-  calendarBtn: { backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
+  headerIconBtn: { backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignItems: "center", justifyContent: "center" },
   eyebrow: { color: C.accent, fontWeight: "900" },
   headerTitle: { color: C.text, fontWeight: "900" },
   streakBadge: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: C.card, borderWidth: 1, borderColor: C.border },
@@ -491,10 +502,9 @@ const b = StyleSheet.create({
   captureTabToggle: { alignItems: "center", justifyContent: "center" },
   inputArea: {},
   inputRow: { borderWidth: 1, borderColor: C.borderMedium, backgroundColor: C.card, justifyContent: "center" },
-  inputContent: { width: "100%", flexDirection: "row", alignItems: "center" },
+  inputContent: { width: "100%", position: "relative" },
   inputSlot: { flex: 1, justifyContent: "center" },
   input: {
-    flex: 1,
     color: C.text,
     fontWeight: "600",
     includeFontPadding: false,
@@ -513,7 +523,7 @@ const b = StyleSheet.create({
     justifyContent: "center",
     zIndex: 1,
   },
-  sendButton: { alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
+  sendButton: { position: "absolute", right: 0, bottom: 0, alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
   sendButtonActive: { backgroundColor: C.accent },
 });
 
