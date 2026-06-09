@@ -502,7 +502,7 @@ const b = StyleSheet.create({
   captureTabToggle: { alignItems: "center", justifyContent: "center" },
   inputArea: {},
   inputRow: { borderWidth: 1, borderColor: C.borderMedium, backgroundColor: C.card, justifyContent: "center" },
-  inputContent: { width: "100%", position: "relative" },
+  inputContent: { width: "100%", flexDirection: "row", alignItems: "flex-end" },
   inputSlot: { flex: 1, justifyContent: "center" },
   input: {
     color: C.text,
@@ -523,7 +523,7 @@ const b = StyleSheet.create({
     justifyContent: "center",
     zIndex: 1,
   },
-  sendButton: { position: "absolute", right: 0, bottom: 0, alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
+  sendButton: { alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
   sendButtonActive: { backgroundColor: C.accent },
 });
 

@@ -1,11 +1,15 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import {
+  LayoutChangeEvent,
   NativeSyntheticEvent,
+  StyleSheet,
+  Text as NativeText,
   StyleProp,
   TextInput,
   TextInputContentSizeChangeEventData,
   TextInputProps,
   TextStyle,
+  View,
 } from "react-native";
 
 type AutoGrowingTextInputProps = TextInputProps & {
@@ -30,8 +34,9 @@ export const AutoGrowingTextInput = forwardRef<TextInput, AutoGrowingTextInputPr
   },
   ref,
 ) {
+  const initialText = typeof props.value === "string" ? props.value : typeof props.defaultValue === "string" ? props.defaultValue : "";
   const [contentHeight, setContentHeight] = useState(minHeight);
-  const previousValueLength = useRef(typeof props.value === "string" ? props.value.length : 0);
+  const [measureText, setMeasureText] = useState(initialText);
   const resolvedMaxHeight = maxHeight ?? (maxHeightMultiplier ? minHeight * maxHeightMultiplier : undefined);
   const height = resolvedMaxHeight ? Math.min(Math.max(contentHeight, minHeight), resolvedMaxHeight) : Math.max(contentHeight, minHeight);
   const shouldScroll = scrollEnabled ?? (resolvedMaxHeight ? contentHeight > resolvedMaxHeight : false);
@@ -39,47 +44,81 @@ export const AutoGrowingTextInput = forwardRef<TextInput, AutoGrowingTextInputPr
   useEffect(() => {
     if (typeof props.value !== "string") return;
 
-    if (props.value.length === 0 || props.value.length < previousValueLength.current) {
+    setMeasureText(props.value);
+
+    if (props.value.length === 0) {
       setContentHeight(minHeight);
     }
-
-    previousValueLength.current = props.value.length;
   }, [minHeight, props.value]);
 
+  const handleMeasureLayout = (event: LayoutChangeEvent) => {
+    setContentHeight(event.nativeEvent.layout.height);
+  };
+
   const handleContentSizeChange = (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) => {
-    setContentHeight(event.nativeEvent.contentSize.height);
     onContentSizeChange?.(event);
   };
 
   const handleChangeText = (text: string) => {
-    if (text.length === 0 || text.length < previousValueLength.current) {
+    setMeasureText(text);
+
+    if (text.length === 0) {
       setContentHeight(minHeight);
     }
 
-    previousValueLength.current = text.length;
     onChangeText?.(text);
   };
 
   return (
-    <TextInput
-      ref={ref}
-      {...props}
-      multiline={multiline}
-      onChangeText={handleChangeText}
-      onContentSizeChange={handleContentSizeChange}
-      scrollEnabled={shouldScroll}
-      style={[
-        style,
-        inputStyle,
-        {
-          flexGrow: 0,
-          flexShrink: 0,
-          height,
-          maxHeight: resolvedMaxHeight,
-          minHeight,
-          textAlignVertical: "top",
-        },
-      ]}
-    />
+    <View style={[styles.container, { height, maxHeight: resolvedMaxHeight, minHeight }]}>
+      <TextInput
+        ref={ref}
+        {...props}
+        multiline={multiline}
+        onChangeText={handleChangeText}
+        onContentSizeChange={handleContentSizeChange}
+        scrollEnabled={shouldScroll}
+        style={[
+          styles.input,
+          style,
+          inputStyle,
+          {
+            height,
+            maxHeight: resolvedMaxHeight,
+            minHeight,
+            textAlignVertical: "top",
+          },
+        ]}
+      />
+      <NativeText
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility="no-hide-descendants"
+        onLayout={handleMeasureLayout}
+        style={[styles.measure, style, inputStyle]}
+      >
+        {measureText || " "}
+      </NativeText>
+    </View>
   );
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 0,
+    flexShrink: 0,
+    position: "relative",
+    width: "100%",
+  },
+  input: {
+    width: "100%",
+  },
+  measure: {
+    left: 0,
+    opacity: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+    zIndex: -1,
+  },
 });
