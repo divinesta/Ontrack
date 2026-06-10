@@ -1,4 +1,4 @@
-import { BillingSettings } from "@/features/billing/BillingSettings_C";
+import { BillingSettings } from "@/features/billing/BillingSettings";
 
 export default function BillingSettingsScreen() {
   return <BillingSettings />;

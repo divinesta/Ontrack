@@ -1,1 +1,1 @@
-export { OnboardingFlowB as OnboardingFlow } from "./FlowB";
+export { OnboardingFlowB as OnboardingFlow } from "./Flow";
