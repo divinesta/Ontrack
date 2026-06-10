@@ -6,4 +6,5 @@ export * from "./IconButton";
 export * from "./KeyboardAwareScreen";
 export * from "./ProgressBar";
 export * from "./Screen";
+export * from "./SettingsScreen";
 export * from "./Text";

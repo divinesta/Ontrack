@@ -1,1 +1,1 @@
-export {};
+export { RemindersSettings } from "./RemindersSettings";
