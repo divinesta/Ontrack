@@ -14,8 +14,8 @@ export const AiQuotaSettings = () => {
    const ms = r.moderateScale;
 
    const isPaid = false;
-   const used = 32;
-   const total = 50;
+   const used = 11;
+   const total = 20;
    const percentage = Math.round((used / total) * 100);
 
    return (
