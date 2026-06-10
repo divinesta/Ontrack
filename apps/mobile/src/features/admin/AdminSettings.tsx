@@ -1,21 +1,37 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text as RNText, View } from "react-native";
 
-import { SettingsScreen } from "@/components/ui";
+import { BottomSheet, SettingsScreen } from "@/components/ui";
 import { palette as C } from "@/features/journal/colors";
 import { useResponsiveMetrics } from "@/theme";
 
-// Variation A: "Control Panel" — Current model config shown prominently,
-// with rollback action and provider details in grouped cards.
+const MODELS = ["Qwen 2.5", "Qwen 2.0", "Qwen 1.5", "Llama 3.1", "Mistral Large"];
+
+type SheetType = "primary" | "fallback" | null;
 
 export const AdminSettings = () => {
   const r = useResponsiveMetrics();
   const ms = r.moderateScale;
 
-  const currentModel = "Qwen 2.5";
+  const [primaryModel, setPrimaryModel] = useState("Qwen 2.5");
+  const [fallbackModel, setFallbackModel] = useState("Qwen 2.0");
+  const [activeSheet, setActiveSheet] = useState<SheetType>(null);
+  const [selectedModel, setSelectedModel] = useState("");
+
   const provider = "OpenRouter";
-  const fallbackModel = "Qwen 2.0";
   const lastChanged = "Jun 8, 2026";
+
+  const openSheet = (type: SheetType) => {
+    setSelectedModel(type === "primary" ? primaryModel : fallbackModel);
+    setActiveSheet(type);
+  };
+
+  const handleConfirm = () => {
+    if (activeSheet === "primary") setPrimaryModel(selectedModel);
+    if (activeSheet === "fallback") setFallbackModel(selectedModel);
+    setActiveSheet(null);
+  };
 
   return (
     <SettingsScreen eyebrow="Admin" title="Model config" subtitle="AI provider and model routing.">
@@ -27,7 +43,7 @@ export const AdminSettings = () => {
           </View>
           <View style={s.configInfo}>
             <RNText style={[s.configLabel, { fontSize: ms(10) }]}>ACTIVE MODEL</RNText>
-            <RNText style={[s.configModel, { fontSize: ms(16) }]}>{currentModel}</RNText>
+            <RNText style={[s.configModel, { fontSize: ms(16) }]}>{primaryModel}</RNText>
           </View>
           <View style={[s.liveBadge, { borderRadius: ms(8), paddingHorizontal: ms(8), paddingVertical: ms(3) }]}>
             <View style={[s.liveDot, { width: ms(6), height: ms(6), borderRadius: ms(3) }]} />
@@ -55,7 +71,7 @@ export const AdminSettings = () => {
       <View style={s.section}>
         <RNText style={[s.sectionLabel, { fontSize: ms(11) }]}>ACTIONS</RNText>
         <View style={[s.card, { borderRadius: ms(14), overflow: "hidden" }]}>
-          <Pressable style={[s.actionRow, { paddingHorizontal: ms(14), paddingVertical: ms(14) }]}>
+          <Pressable style={[s.actionRow, { paddingHorizontal: ms(14), paddingVertical: ms(14) }]} onPress={() => openSheet("primary")}>
             <Ionicons name="swap-horizontal-outline" size={ms(16)} color={C.dark} />
             <View style={s.actionContent}>
               <RNText style={[s.actionTitle, { fontSize: ms(13) }]}>Change model</RNText>
@@ -64,7 +80,7 @@ export const AdminSettings = () => {
             <Ionicons name="chevron-forward" size={ms(14)} color={C.muted} />
           </Pressable>
           <View style={s.actionDivider} />
-          <Pressable style={[s.actionRow, { paddingHorizontal: ms(14), paddingVertical: ms(14) }]}>
+          <Pressable style={[s.actionRow, { paddingHorizontal: ms(14), paddingVertical: ms(14) }]} onPress={() => openSheet("fallback")}>
             <Ionicons name="git-branch-outline" size={ms(16)} color={C.dark} />
             <View style={s.actionContent}>
               <RNText style={[s.actionTitle, { fontSize: ms(13) }]}>Change fallback</RNText>
@@ -91,6 +107,29 @@ export const AdminSettings = () => {
           Config changes apply immediately to all AI actions. Rollback restores the previous model and provider in one tap.
         </RNText>
       </View>
+
+      {/* Model Selection Sheet */}
+      <BottomSheet
+        visible={activeSheet !== null}
+        title={activeSheet === "primary" ? "Select primary model" : "Select fallback model"}
+        onClose={() => setActiveSheet(null)}
+        onConfirm={handleConfirm}
+      >
+        <View style={{ gap: 6 }}>
+          {MODELS.map((model) => (
+            <Pressable
+              key={model}
+              style={[s.optionRow, model === selectedModel && s.optionRowActive, { borderRadius: ms(12), paddingHorizontal: ms(14), paddingVertical: ms(13) }]}
+              onPress={() => setSelectedModel(model)}
+            >
+              <RNText style={[s.optionText, model === selectedModel && s.optionTextActive, { fontSize: ms(14) }]}>
+                {model}
+              </RNText>
+              {model === selectedModel && <Ionicons name="checkmark" size={ms(16)} color={C.dark} />}
+            </Pressable>
+          ))}
+        </View>
+      </BottomSheet>
     </SettingsScreen>
   );
 };
@@ -121,4 +160,9 @@ const s = StyleSheet.create({
   actionTitleMuted: { color: C.muted },
   actionDivider: { height: 1, backgroundColor: C.border, marginHorizontal: 14 },
   hint: { color: C.muted, fontWeight: "600" },
+
+  optionRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: C.bg, borderWidth: 1, borderColor: C.border },
+  optionRowActive: { backgroundColor: C.accentSoft, borderColor: C.accent },
+  optionText: { color: C.text, fontWeight: "700" },
+  optionTextActive: { color: C.dark, fontWeight: "900" },
 });

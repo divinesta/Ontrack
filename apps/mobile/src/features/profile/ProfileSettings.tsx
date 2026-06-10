@@ -1,27 +1,51 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text as RNText, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text as RNText, TextInput, View } from "react-native";
 
-import { SettingsScreen } from "@/components/ui";
+import { BottomSheet, SettingsScreen } from "@/components/ui";
 import { palette as C } from "@/features/journal/colors";
 import { useResponsiveMetrics } from "@/theme";
+
+type SheetType = "profile" | "password" | null;
 
 export const ProfileSettings = () => {
   const r = useResponsiveMetrics();
   const ms = r.moderateScale;
 
-  const [showPasswordSheet, setShowPasswordSheet] = useState(false);
+  const [activeSheet, setActiveSheet] = useState<SheetType>(null);
+
+  // Profile edit state
+  const [name, setName] = useState("Emilola Divine");
+  const [email, setEmail] = useState("divine@gmail.com");
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+
+  // Password state
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? "Unknown";
   const hasPassword = true;
 
+  const openProfileSheet = () => {
+    setEditName(name);
+    setEditEmail(email);
+    setActiveSheet("profile");
+  };
+
+  const handleProfileSave = () => {
+    setName(editName);
+    setEmail(editEmail);
+    setActiveSheet(null);
+  };
+
   const handlePasswordSave = () => {
-    setShowPasswordSheet(false);
+    setActiveSheet(null);
     setNewPassword("");
     setConfirmPassword("");
   };
+
+  const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <SettingsScreen eyebrow="Profile" title="Profile" subtitle="Who you are on OnTrack.">
@@ -29,13 +53,13 @@ export const ProfileSettings = () => {
       <View style={[s.identityCard, { borderRadius: ms(16), padding: ms(16) }]}>
         <View style={s.identityRow}>
           <View style={[s.avatar, { width: ms(44), height: ms(44), borderRadius: ms(14) }]}>
-            <RNText style={[s.avatarText, { fontSize: ms(16) }]}>ED</RNText>
+            <RNText style={[s.avatarText, { fontSize: ms(16) }]}>{initials}</RNText>
           </View>
           <View style={s.identityContent}>
-            <RNText style={[s.identityName, { fontSize: ms(15) }]}>Emilola Divine</RNText>
-            <RNText style={[s.identityEmail, { fontSize: ms(12) }]}>divine@gmail.com</RNText>
+            <RNText style={[s.identityName, { fontSize: ms(15) }]}>{name}</RNText>
+            <RNText style={[s.identityEmail, { fontSize: ms(12) }]}>{email}</RNText>
           </View>
-          <Pressable style={[s.editBtn, { width: ms(34), height: ms(34), borderRadius: ms(10) }]}>
+          <Pressable style={[s.editBtn, { width: ms(34), height: ms(34), borderRadius: ms(10) }]} onPress={openProfileSheet}>
             <Ionicons name="pencil-outline" size={ms(14)} color={C.dark} />
           </Pressable>
         </View>
@@ -57,7 +81,7 @@ export const ProfileSettings = () => {
             </View>
             <Pressable
               style={[s.passwordBtn, { borderRadius: ms(8), paddingHorizontal: ms(10), paddingVertical: ms(5) }]}
-              onPress={() => setShowPasswordSheet(true)}
+              onPress={() => setActiveSheet("password")}
             >
               <RNText style={[s.passwordBtnText, { fontSize: ms(11) }]}>
                 {hasPassword ? "Update" : "Set"}
@@ -108,57 +132,87 @@ export const ProfileSettings = () => {
         <RNText style={[s.signOutText, { fontSize: ms(13) }]}>Sign out</RNText>
       </Pressable>
 
-      {/* Password Bottom Sheet */}
-      <Modal transparent animationType="slide" visible={showPasswordSheet} onRequestClose={() => setShowPasswordSheet(false)}>
-        <Pressable style={ts.overlay} onPress={() => setShowPasswordSheet(false)}>
-          <View style={[ts.sheet, { borderTopLeftRadius: ms(24), borderTopRightRadius: ms(24), paddingBottom: ms(32) }]}>
-            <Pressable onPress={(e) => e.stopPropagation()}>
-              <View style={[ts.handle, { width: ms(36), height: ms(4), borderRadius: ms(2), marginTop: ms(12) }]} />
-              <RNText style={[ts.sheetTitle, { fontSize: ms(14), marginTop: ms(16), marginBottom: ms(20) }]}>
-                Update password
-              </RNText>
-
-              <View style={[ts.inputGroup, { gap: ms(12), paddingHorizontal: ms(20) }]}>
-                <View style={ts.field}>
-                  <RNText style={[ts.fieldLabel, { fontSize: ms(10), marginBottom: ms(6) }]}>NEW PASSWORD</RNText>
-                  <TextInput
-                    style={[ts.input, { height: ms(44), borderRadius: ms(12), paddingHorizontal: ms(14), fontSize: ms(14) }]}
-                    placeholder="Enter new password"
-                    placeholderTextColor={C.faded}
-                    secureTextEntry
-                    value={newPassword}
-                    onChangeText={setNewPassword}
-                  />
-                </View>
-
-                <View style={ts.field}>
-                  <RNText style={[ts.fieldLabel, { fontSize: ms(10), marginBottom: ms(6) }]}>CONFIRM PASSWORD</RNText>
-                  <TextInput
-                    style={[ts.input, { height: ms(44), borderRadius: ms(12), paddingHorizontal: ms(14), fontSize: ms(14) }]}
-                    placeholder="Confirm new password"
-                    placeholderTextColor={C.faded}
-                    secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                  />
-                </View>
-              </View>
-
-              <Pressable
-                style={[
-                  ts.saveBtn,
-                  (!newPassword || newPassword !== confirmPassword) && ts.saveBtnDisabled,
-                  { height: ms(46), borderRadius: ms(14), marginTop: ms(20), marginHorizontal: ms(20) },
-                ]}
-                onPress={handlePasswordSave}
-                disabled={!newPassword || newPassword !== confirmPassword}
-              >
-                <RNText style={[ts.saveBtnText, { fontSize: ms(14) }]}>Save password</RNText>
-              </Pressable>
+      {/* Edit Profile Sheet */}
+      <BottomSheet
+        visible={activeSheet === "profile"}
+        title="Edit profile"
+        onClose={() => setActiveSheet(null)}
+        onConfirm={handleProfileSave}
+        confirmDisabled={!editName.trim() || !editEmail.trim()}
+      >
+        <View style={{ gap: ms(12) }}>
+          {/* Avatar */}
+          <View style={ts.avatarSection}>
+            <View style={[ts.avatarLarge, { width: ms(64), height: ms(64), borderRadius: ms(22) }]}>
+              <RNText style={[ts.avatarLargeText, { fontSize: ms(22) }]}>{initials}</RNText>
+            </View>
+            <Pressable style={[ts.changePhotoBtn, { borderRadius: ms(8), paddingHorizontal: ms(12), paddingVertical: ms(6) }]}>
+              <RNText style={[ts.changePhotoText, { fontSize: ms(11) }]}>Change photo</RNText>
             </Pressable>
           </View>
-        </Pressable>
-      </Modal>
+
+          {/* Name */}
+          <View style={ts.field}>
+            <RNText style={[ts.fieldLabel, { fontSize: ms(10), marginBottom: ms(6) }]}>NAME</RNText>
+            <TextInput
+              style={[ts.input, { height: ms(44), borderRadius: ms(12), paddingHorizontal: ms(14), fontSize: ms(14) }]}
+              placeholder="Your name"
+              placeholderTextColor={C.faded}
+              value={editName}
+              onChangeText={setEditName}
+            />
+          </View>
+
+          {/* Email */}
+          <View style={ts.field}>
+            <RNText style={[ts.fieldLabel, { fontSize: ms(10), marginBottom: ms(6) }]}>EMAIL</RNText>
+            <TextInput
+              style={[ts.input, { height: ms(44), borderRadius: ms(12), paddingHorizontal: ms(14), fontSize: ms(14) }]}
+              placeholder="Your email"
+              placeholderTextColor={C.faded}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={editEmail}
+              onChangeText={setEditEmail}
+            />
+          </View>
+        </View>
+      </BottomSheet>
+
+      {/* Password Sheet */}
+      <BottomSheet
+        visible={activeSheet === "password"}
+        title="Update password"
+        onClose={() => { setActiveSheet(null); setNewPassword(""); setConfirmPassword(""); }}
+        onConfirm={handlePasswordSave}
+        confirmDisabled={!newPassword || newPassword !== confirmPassword}
+      >
+        <View style={{ gap: ms(12) }}>
+          <View style={ts.field}>
+            <RNText style={[ts.fieldLabel, { fontSize: ms(10), marginBottom: ms(6) }]}>NEW PASSWORD</RNText>
+            <TextInput
+              style={[ts.input, { height: ms(44), borderRadius: ms(12), paddingHorizontal: ms(14), fontSize: ms(14) }]}
+              placeholder="Enter new password"
+              placeholderTextColor={C.faded}
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+          </View>
+
+          <View style={ts.field}>
+            <RNText style={[ts.fieldLabel, { fontSize: ms(10), marginBottom: ms(6) }]}>CONFIRM PASSWORD</RNText>
+            <TextInput
+              style={[ts.input, { height: ms(44), borderRadius: ms(12), paddingHorizontal: ms(14), fontSize: ms(14) }]}
+              placeholder="Confirm new password"
+              placeholderTextColor={C.faded}
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+          </View>
+        </View>
+      </BottomSheet>
     </SettingsScreen>
   );
 };
@@ -203,15 +257,12 @@ const s = StyleSheet.create({
 });
 
 const ts = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.35)", justifyContent: "flex-end" },
-  sheet: { backgroundColor: C.card, paddingHorizontal: 0 },
-  handle: { backgroundColor: C.borderMedium, alignSelf: "center" },
-  sheetTitle: { color: C.text, fontWeight: "900", textAlign: "center" },
-  inputGroup: {},
+  avatarSection: { alignItems: "center", gap: 10, paddingBottom: 8 },
+  avatarLarge: { backgroundColor: C.accentSoft, alignItems: "center", justifyContent: "center" },
+  avatarLargeText: { color: C.dark, fontWeight: "900" },
+  changePhotoBtn: { backgroundColor: C.darkSoft },
+  changePhotoText: { color: C.text, fontWeight: "800" },
   field: {},
   fieldLabel: { color: C.muted, fontWeight: "800", letterSpacing: 1 },
   input: { backgroundColor: C.bg, borderWidth: 1, borderColor: C.border, color: C.text, fontWeight: "700" },
-  saveBtn: { backgroundColor: C.accent, alignItems: "center", justifyContent: "center" },
-  saveBtnDisabled: { opacity: 0.4 },
-  saveBtnText: { color: C.dark, fontWeight: "900" },
 });

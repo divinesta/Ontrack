@@ -1,5 +1,5 @@
 // Swap the import below to preview each variation:
-import { AdminSettings } from "@/features/admin/AdminSettings_A";
+import { AdminSettings } from "@/features/admin/AdminSettings";
 // import { AdminSettings } from "@/features/admin/AdminSettings_B";
 // import { AdminSettings } from "@/features/admin/AdminSettings_C";
 

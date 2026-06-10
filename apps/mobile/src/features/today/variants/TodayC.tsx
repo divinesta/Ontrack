@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import {
   Animated,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,6 +13,7 @@ import { Swipeable } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { BottomSheet } from "@/components/ui";
 import { useResponsiveMetrics } from "@/theme";
 
 const STREAK = 7;
@@ -81,108 +81,96 @@ function CreateTaskModal({ visible, onClose, onSave }: {
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen">
-      <View style={m.overlay}>
-        <Pressable style={m.backdrop} onPress={handleClose} />
-        <View style={m.sheet}>
-          {/* Header */}
-          <View style={m.sheetHeader}>
-            <Pressable onPress={handleClose} style={m.iconBtn} hitSlop={10}>
-              <RNText style={m.iconBtnText}>✕</RNText>
-            </Pressable>
-            <RNText style={m.sheetTitle}>Create task</RNText>
-            <Pressable onPress={handleSave} style={[m.iconBtn, m.iconBtnSave]} hitSlop={10}>
-              <RNText style={m.iconBtnSaveText}>✓</RNText>
-            </Pressable>
-          </View>
+    <BottomSheet
+      visible={visible}
+      title="Create task"
+      onClose={handleClose}
+      onConfirm={handleSave}
+      confirmDisabled={!name.trim()}
+    >
+      {/* Task name */}
+      <View style={m.fieldGroup}>
+        <RNText style={m.fieldLabel}>Task name</RNText>
+        <TextInput
+          style={m.nameInput}
+          placeholder="What do you want to do?"
+          placeholderTextColor="rgba(16,32,22,0.3)"
+          value={name}
+          onChangeText={setName}
+          autoFocus
+        />
+      </View>
 
-          <ScrollView contentContainerStyle={m.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-            {/* Task name */}
-            <View style={m.fieldGroup}>
-              <RNText style={m.fieldLabel}>Task name</RNText>
-              <TextInput
-                style={m.nameInput}
-                placeholder="What do you want to do?"
-                placeholderTextColor="rgba(16,32,22,0.3)"
-                value={name}
-                onChangeText={setName}
-                autoFocus
-              />
-            </View>
-
-            {/* Time of day */}
-            <View style={m.fieldGroup}>
-              <RNText style={m.fieldLabel}>Time of day</RNText>
-              <View style={m.fieldRow}>
-                <RNText style={m.fieldIcon}>🕐</RNText>
-                <RNText style={m.fieldValue}>At time</RNText>
-              </View>
-            </View>
-
-            {/* Starts */}
-            <View style={m.dateTimeRow}>
-              <View style={[m.fieldGroup, { flex: 1 }]}>
-                <RNText style={m.fieldLabel}>Starts</RNText>
-                <View style={m.fieldRow}>
-                  <RNText style={m.fieldIcon}>📅</RNText>
-                  <RNText style={m.fieldValue}>{startDate}</RNText>
-                </View>
-              </View>
-              <View style={[m.fieldGroup, { flex: 1 }]}>
-                <RNText style={m.fieldLabel}>Start time</RNText>
-                <View style={m.fieldRow}>
-                  <RNText style={m.fieldIcon}>🕐</RNText>
-                  <RNText style={m.fieldValue}>{startTime}</RNText>
-                </View>
-              </View>
-            </View>
-
-            {/* Ends */}
-            <View style={m.dateTimeRow}>
-              <View style={[m.fieldGroup, { flex: 1 }]}>
-                <RNText style={m.fieldLabel}>Ends</RNText>
-                <View style={m.fieldRow}>
-                  <RNText style={m.fieldIcon}>📅</RNText>
-                  <RNText style={m.fieldValue}>{endDate}</RNText>
-                </View>
-              </View>
-              <View style={[m.fieldGroup, { flex: 1 }]}>
-                <RNText style={m.fieldLabel}>End time</RNText>
-                <View style={m.fieldRow}>
-                  <RNText style={m.fieldIcon}>🕐</RNText>
-                  <RNText style={m.fieldValue}>{endTime}</RNText>
-                </View>
-              </View>
-            </View>
-
-            {/* Repeat */}
-            <View style={m.fieldGroup}>
-              <RNText style={m.fieldLabel}>Repeat</RNText>
-              <Pressable style={m.fieldRow} onPress={() => setShowRepeat((v) => !v)}>
-                <RNText style={m.fieldIcon}>🔁</RNText>
-                <RNText style={[m.fieldValue, { flex: 1 }]}>{repeat}</RNText>
-                <RNText style={m.chevron}>{showRepeat ? "▲" : "▼"}</RNText>
-              </Pressable>
-              {showRepeat && (
-                <View style={m.repeatDropdown}>
-                  {REPEAT_OPTIONS.map((opt) => (
-                    <Pressable
-                      key={opt}
-                      style={[m.repeatOption, opt === repeat && m.repeatOptionActive]}
-                      onPress={() => { setRepeat(opt); setShowRepeat(false); }}
-                    >
-                      <RNText style={[m.repeatOptionText, opt === repeat && m.repeatOptionTextActive]}>
-                        {opt}
-                      </RNText>
-                    </Pressable>
-                  ))}
-                </View>
-              )}
-            </View>
-          </ScrollView>
+      {/* Time of day */}
+      <View style={m.fieldGroup}>
+        <RNText style={m.fieldLabel}>Time of day</RNText>
+        <View style={m.fieldRow}>
+          <RNText style={m.fieldIcon}>🕐</RNText>
+          <RNText style={m.fieldValue}>At time</RNText>
         </View>
       </View>
-    </Modal>
+
+      {/* Starts */}
+      <View style={m.dateTimeRow}>
+        <View style={[m.fieldGroup, { flex: 1 }]}>
+          <RNText style={m.fieldLabel}>Starts</RNText>
+          <View style={m.fieldRow}>
+            <RNText style={m.fieldIcon}>📅</RNText>
+            <RNText style={m.fieldValue}>{startDate}</RNText>
+          </View>
+        </View>
+        <View style={[m.fieldGroup, { flex: 1 }]}>
+          <RNText style={m.fieldLabel}>Start time</RNText>
+          <View style={m.fieldRow}>
+            <RNText style={m.fieldIcon}>🕐</RNText>
+            <RNText style={m.fieldValue}>{startTime}</RNText>
+          </View>
+        </View>
+      </View>
+
+      {/* Ends */}
+      <View style={m.dateTimeRow}>
+        <View style={[m.fieldGroup, { flex: 1 }]}>
+          <RNText style={m.fieldLabel}>Ends</RNText>
+          <View style={m.fieldRow}>
+            <RNText style={m.fieldIcon}>📅</RNText>
+            <RNText style={m.fieldValue}>{endDate}</RNText>
+          </View>
+        </View>
+        <View style={[m.fieldGroup, { flex: 1 }]}>
+          <RNText style={m.fieldLabel}>End time</RNText>
+          <View style={m.fieldRow}>
+            <RNText style={m.fieldIcon}>🕐</RNText>
+            <RNText style={m.fieldValue}>{endTime}</RNText>
+          </View>
+        </View>
+      </View>
+
+      {/* Repeat */}
+      <View style={m.fieldGroup}>
+        <RNText style={m.fieldLabel}>Repeat</RNText>
+        <Pressable style={m.fieldRow} onPress={() => setShowRepeat((v) => !v)}>
+          <RNText style={m.fieldIcon}>🔁</RNText>
+          <RNText style={[m.fieldValue, { flex: 1 }]}>{repeat}</RNText>
+          <RNText style={m.chevron}>{showRepeat ? "▲" : "▼"}</RNText>
+        </Pressable>
+        {showRepeat && (
+          <View style={m.repeatDropdown}>
+            {REPEAT_OPTIONS.map((opt) => (
+              <Pressable
+                key={opt}
+                style={[m.repeatOption, opt === repeat && m.repeatOptionActive]}
+                onPress={() => { setRepeat(opt); setShowRepeat(false); }}
+              >
+                <RNText style={[m.repeatOptionText, opt === repeat && m.repeatOptionTextActive]}>
+                  {opt}
+                </RNText>
+              </Pressable>
+            ))}
+          </View>
+        )}
+      </View>
+    </BottomSheet>
   );
 }
 
@@ -488,30 +476,6 @@ const s = StyleSheet.create({
 });
 
 const m = StyleSheet.create({
-  overlay: { flex: 1, justifyContent: "flex-end" },
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.35)" },
-  sheet: {
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 28, borderTopRightRadius: 28,
-    maxHeight: "85%",
-    shadowColor: "#000", shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1, shadowRadius: 20, elevation: 20,
-  },
-  sheetHeader: {
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-    paddingHorizontal: 20, paddingVertical: 18,
-    borderBottomWidth: 1, borderBottomColor: "rgba(16,32,22,0.06)",
-  },
-  sheetTitle: { color: "#102016", fontSize: 16, fontWeight: "900" },
-  iconBtn: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: "rgba(16,32,22,0.06)",
-    alignItems: "center", justifyContent: "center",
-  },
-  iconBtnText: { color: "#102016", fontSize: 14, fontWeight: "700" },
-  iconBtnSave: { backgroundColor: "#102016" },
-  iconBtnSaveText: { color: "#86e7b8", fontSize: 14, fontWeight: "900" },
-  body: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40, gap: 12 },
   fieldGroup: { gap: 6 },
   fieldLabel: { color: "#9fb59f", fontSize: 11, fontWeight: "800", letterSpacing: 0.8 },
   fieldRow: {
