@@ -6,8 +6,6 @@ import { SettingsScreen } from "@/components/ui";
 import { palette as C } from "@/features/journal/colors";
 import { useResponsiveMetrics } from "@/theme";
 
-// Variation A: "Usage Gauge" — Large circular-style progress at top showing
-// quota consumption, with model info and behavior settings below.
 
 export const AiQuotaSettings = () => {
    const r = useResponsiveMetrics();
