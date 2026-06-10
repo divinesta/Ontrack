@@ -34,7 +34,7 @@ function buildWeekDays(anchorDate: Date) {
   return days;
 }
 
-const TODAY = new Date(2026, 4, 29); // May 29 2026
+const TODAY = new Date(2026, 6, 210 ); // May 29 2026
 const LOGGED_DATES = new Set([
   "2026-05-25", "2026-05-26", "2026-05-27", "2026-05-29",
 ]);
@@ -285,7 +285,7 @@ export function TodayC() {
       <View style={s.fixedHeader}>
         <View style={s.header}>
           <View>
-            <RNText style={s.eyebrow}>FRIDAY · MAY 29</RNText>
+            <RNText style={s.eyebrow}>WEDNESDAY · JUNE 10</RNText>
             <RNText style={s.greeting}>Good morning, Divine.</RNText>
           </View>
           <Pressable style={s.avatarCircle}>
