@@ -29,6 +29,13 @@ const categories = [
    { emoji: "🎨", label: "Creative" },
    { emoji: "👥", label: "Social" },
    { emoji: "🏡", label: "Home" },
+   { emoji: "💰", label: "Finance" },
+   { emoji: "🥗", label: "Nutrition" },
+   { emoji: "💧", label: "Hydration" },
+   { emoji: "💤", label: "Sleep" },
+   { emoji: "👨‍👩‍👧", label: "Family" },
+   { emoji: "✈️", label: "Travel" },
+   { emoji: "🎯", label: "Goals" },
 ];
 
 type OnboardingFlowBProps = {
@@ -42,6 +49,7 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
    const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
    const [activeSlide, setActiveSlide] = useState(0);
+   const canContinueNeeds = selectedNeeds.length > 0;
    const canContinueCategories = selectedCategories.length >= 3;
 
    useEffect(() => {
@@ -117,7 +125,7 @@ export function OnboardingFlowB({ initialStep = "welcome" }: OnboardingFlowBProp
                      })}
                   </View>
                </View>
-               <Pressable style={[s.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }]} onPress={next}>
+               <Pressable disabled={!canContinueNeeds} style={[s.primaryButton, { height: r.buttonHeight, borderRadius: r.buttonHeight / 2 }, !canContinueNeeds && s.primaryButtonDisabled]} onPress={next}>
                   <Text style={s.primaryButtonText}>Continue</Text>
                </Pressable>
             </View>
