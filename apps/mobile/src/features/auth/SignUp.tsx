@@ -6,7 +6,7 @@ import { provisionalGreenPalette, useResponsiveMetrics } from "@/theme";
 
 const palette = provisionalGreenPalette;
 
-export function SignUp() {
+export const SignUp = () => {
    const router = useRouter();
    const r = useResponsiveMetrics();
 
