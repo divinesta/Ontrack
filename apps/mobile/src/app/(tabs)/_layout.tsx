@@ -22,9 +22,7 @@ function FloatingTabBar() {
   const router = useRouter();
   const pathname = usePathname();
   const { insets } = useResponsiveMetrics();
-  const isCapture = pathname.includes("capture");
-
-  if (isCapture) {
+  if (pathname.includes("capture")) {
     return null;
   }
 

@@ -5,14 +5,13 @@ import {
   Modal,
   Pressable,
   StyleSheet,
-  TextInput,
   View,
   Text as RNText,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-import { AutoGrowingTextInput, KeyboardAwareScreen } from "@/components/ui";
+import { ChatComposer, KeyboardAwareScreen } from "@/components/ui";
 import { useResponsiveMetrics } from "@/theme";
 import { createMockEntry, simulateProcessing, simulateRefine, simulateSave } from "../mock";
 import { palette as C } from "../colors";
@@ -175,21 +174,13 @@ export function JournalB() {
   const router = useRouter();
   const { insets, moderateScale, captureComposer, contentPaddingX } = useResponsiveMetrics();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputText, setInputText] = useState("");
-  const [inputFocused, setInputFocused] = useState(false);
   const [navExpanded, setNavExpanded] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarVisible, setCalendarVisible] = useState(false);
-  const inputRef = useRef<TextInput>(null);
   const flatListRef = useRef<FlatList>(null);
   const navExpandAnim = useRef(new Animated.Value(0)).current;
 
-  const hasText = inputText.trim().length > 0;
-  const showPlaceholder = !inputFocused && inputText.length === 0;
-
   const ms = moderateScale;
-  const composerHeight = captureComposer.rowHeight;
-  const composerControlHeight = captureComposer.controlHeight;
   const navExpandedHeight = navExpandAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [
@@ -202,17 +193,15 @@ export function JournalB() {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...updates } : m)));
   }, []);
 
-  const handleSend = useCallback(async () => {
-    if (!inputText.trim()) return;
-    const entry = createMockEntry(inputText.trim());
+  const handleSend = useCallback(async (text: string) => {
+    const entry = createMockEntry(text);
     const msg: Message = { id: entry.id, text: entry.text, status: "sending" };
     setMessages((prev) => [...prev, msg]);
-    setInputText("");
 
     setTimeout(() => updateMessage(entry.id, { status: "processing" }), 300);
     await simulateProcessing();
     updateMessage(entry.id, { status: "ready" });
-  }, [inputText, updateMessage]);
+  }, [updateMessage]);
 
   const handleRefine = useCallback(async (id: string, originalText: string) => {
     updateMessage(id, { status: "refining" });
@@ -401,55 +390,7 @@ export function JournalB() {
           </Animated.View>
         </View>
 
-        <View
-          style={[
-            b.inputRow,
-            {
-              borderRadius: composerHeight / 2,
-              minHeight: composerHeight,
-              paddingLeft: ms(16),
-              paddingRight: ms(8),
-              paddingVertical: ms(8),
-            },
-          ]}
-        >
-          <View style={[b.inputContent, { minHeight: composerControlHeight, gap: ms(8) }]}>
-            <View style={[b.inputSlot, { minHeight: composerControlHeight }]}>
-              {showPlaceholder && (
-                <Pressable style={b.placeholderPressable} onPress={() => inputRef.current?.focus()}>
-                  <RNText style={[b.inputPlaceholder, { fontSize: ms(15), lineHeight: ms(20) }]}>
-                    Drop a thought here...
-                  </RNText>
-                </Pressable>
-              )}
-              <AutoGrowingTextInput
-                ref={inputRef}
-                style={[b.input, { fontSize: ms(15), lineHeight: ms(20) }]}
-                minHeight={composerControlHeight}
-                maxHeightMultiplier={4}
-                value={inputText}
-                onBlur={() => setInputFocused(false)}
-                onChangeText={setInputText}
-                onFocus={() => setInputFocused(true)}
-                maxLength={2000}
-              />
-            </View>
-            <Pressable
-              style={[
-                b.sendButton,
-                { width: composerControlHeight, height: composerControlHeight, borderRadius: composerControlHeight / 2 },
-                hasText && b.sendButtonActive,
-              ]}
-              onPress={hasText ? handleSend : undefined}
-            >
-              {hasText ? (
-                <Ionicons name="arrow-up" size={ms(17)} color={C.dark} />
-              ) : (
-                <Ionicons name="mic" size={ms(17)} color={C.muted} />
-              )}
-            </Pressable>
-          </View>
-        </View>
+        <ChatComposer placeholder="Drop a thought here..." onSend={handleSend} />
       </View>
     </KeyboardAwareScreen>
   );
@@ -501,30 +442,6 @@ const b = StyleSheet.create({
   captureTabItems: { flex: 1, justifyContent: "flex-start" },
   captureTabToggle: { alignItems: "center", justifyContent: "center" },
   inputArea: {},
-  inputRow: { borderWidth: 1, borderColor: C.borderMedium, backgroundColor: C.card, justifyContent: "center" },
-  inputContent: { width: "100%", flexDirection: "row", alignItems: "flex-end" },
-  inputSlot: { flex: 1, justifyContent: "center" },
-  input: {
-    color: C.text,
-    fontWeight: "600",
-    includeFontPadding: false,
-    paddingBottom: 0,
-    paddingHorizontal: 0,
-    paddingTop: 0,
-    textAlignVertical: "center",
-  },
-  inputPlaceholder: {
-    color: C.muted,
-    fontWeight: "600",
-    includeFontPadding: false,
-  },
-  placeholderPressable: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    zIndex: 1,
-  },
-  sendButton: { alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
-  sendButtonActive: { backgroundColor: C.accent },
 });
 
 const cal = StyleSheet.create({

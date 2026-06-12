@@ -1,5 +1,6 @@
 export * from "./AutoGrowingTextInput";
 export * from "./BottomSheet";
+export * from "./ChatComposer";
 export * from "./Button";
 export * from "./Card";
 export * from "./Chip";
