@@ -18,7 +18,7 @@ const features = [
   },
 ]
 
-export function Landing() {
+export const Landing = () => {
   return (
     <div className="v1">
       <div className="v1-grain" aria-hidden="true" />

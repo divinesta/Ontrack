@@ -10,14 +10,14 @@ type AuthLayoutProps = {
   children: ReactNode
 }
 
-export function AuthLayout({
+export const AuthLayout = ({
   imagePosition,
   imageSrc,
   imageAlt,
   visualTitle,
   visualBody,
   children,
-}: AuthLayoutProps) {
+}: AuthLayoutProps) => {
   const visual = (
     <aside className="auth-visual">
       <img className="auth-visual-image" src={imageSrc} alt={imageAlt} />
