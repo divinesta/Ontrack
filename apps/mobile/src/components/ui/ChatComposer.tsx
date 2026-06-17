@@ -1,5 +1,5 @@
-import { forwardRef, useCallback, useRef, useState } from "react";
-import { Pressable, StyleSheet, TextInput, View, Text as RNText } from "react-native";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { Keyboard, Pressable, StyleSheet, TextInput, View, Text as RNText } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { AutoGrowingTextInput } from "./AutoGrowingTextInput";
@@ -26,6 +26,15 @@ export const ChatComposer = forwardRef<TextInput, ChatComposerProps>(
 
     const hasText = inputText.trim().length > 0;
     const showPlaceholder = !inputFocused && inputText.length === 0;
+
+    useEffect(() => {
+      const subscription = Keyboard.addListener("keyboardDidHide", () => {
+        inputRef.current?.blur();
+        setInputFocused(false);
+      });
+
+      return () => subscription.remove();
+    }, [inputRef]);
 
     const handleSend = useCallback(() => {
       if (!inputText.trim()) return;
@@ -82,6 +91,8 @@ export const ChatComposer = forwardRef<TextInput, ChatComposerProps>(
     );
   },
 );
+
+ChatComposer.displayName = "ChatComposer";
 
 const styles = StyleSheet.create({
   inputRow: { borderWidth: 1, borderColor: C.borderMedium, backgroundColor: C.card, justifyContent: "center" },

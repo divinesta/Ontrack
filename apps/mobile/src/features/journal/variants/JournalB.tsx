@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 
-import { ChatComposer, KeyboardAwareScreen } from "@/components/ui";
+import { ChatComposer, TypingDots } from "@/components/ui";
 import { useResponsiveMetrics } from "@/theme";
 import { createMockEntry, simulateProcessing, simulateRefine, simulateSave } from "../mock";
 import { palette as C } from "../colors";
@@ -29,29 +30,6 @@ type CaptureNavItem = {
   route: string;
   icon: keyof typeof Ionicons.glyphMap;
 };
-
-function PulsingDots({ size }: { size: number }) {
-  const anim = useRef(new Animated.Value(0)).current;
-
-  useState(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(anim, { toValue: 1, duration: 800, useNativeDriver: true }),
-        Animated.timing(anim, { toValue: 0, duration: 800, useNativeDriver: true }),
-      ])
-    ).start();
-  });
-
-  const dotStyle = { width: size, height: size, borderRadius: size / 2, backgroundColor: C.accent };
-
-  return (
-    <View style={b.dotsContainer}>
-      <Animated.View style={[dotStyle, { opacity: anim }]} />
-      <Animated.View style={[dotStyle, { opacity: Animated.add(0.3, Animated.multiply(anim, 0.7)) }]} />
-      <Animated.View style={[dotStyle, { opacity: Animated.add(0.1, Animated.multiply(anim, 0.5)) }]} />
-    </View>
-  );
-}
 
 const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -257,7 +235,7 @@ export function JournalB() {
 
       {(item.status === "processing" || item.status === "refining") && (
         <View style={[b.statusDots, { marginTop: ms(10), height: ms(10) }]}>
-          <PulsingDots size={ms(5)} />
+          <TypingDots size={ms(5)} />
         </View>
       )}
 
@@ -285,7 +263,7 @@ export function JournalB() {
   ), [handleRefine, handleSave, ms]);
 
   return (
-    <KeyboardAwareScreen safeAreaEdges={[]} scrollEnabled={false} style={b.container}>
+    <View style={b.container}>
       <View style={{ paddingHorizontal: contentPaddingX, paddingTop: insets.top + ms(12), paddingBottom: ms(14) }}>
         <View style={b.headerTop}>
           <View>
@@ -331,7 +309,18 @@ export function JournalB() {
         style={b.list}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={[b.listContent, { paddingHorizontal: contentPaddingX }]}
+        contentContainerStyle={[
+          b.listContent,
+          {
+            paddingBottom:
+              captureComposer.tabSize +
+              captureComposer.floatingTabGap +
+              captureComposer.rowHeight +
+              captureComposer.verticalPadding * 2 +
+              ms(24),
+            paddingHorizontal: contentPaddingX,
+          },
+        ]}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
@@ -349,11 +338,12 @@ export function JournalB() {
         }
       />
 
-      <View
+      <KeyboardStickyView
+        offset={{ closed: -ms(18), opened: -ms(18) }}
         style={[
           b.inputArea,
           {
-            paddingBottom: captureComposer.bottomOffset,
+            paddingBottom: captureComposer.verticalPadding + ms(8),
             paddingHorizontal: captureComposer.horizontalPadding,
             paddingTop: captureComposer.verticalPadding,
           },
@@ -391,8 +381,8 @@ export function JournalB() {
         </View>
 
         <ChatComposer placeholder="Drop a thought here..." onSend={handleSend} />
-      </View>
-    </KeyboardAwareScreen>
+      </KeyboardStickyView>
+    </View>
   );
 }
 
@@ -425,7 +415,6 @@ const b = StyleSheet.create({
   actionPillPrimary: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.accent },
   actionPillPrimaryText: { color: C.dark, fontWeight: "700" },
   divider: { height: 1, backgroundColor: C.border },
-  dotsContainer: { flexDirection: "row", gap: 4 },
   captureTabBar: {
     alignItems: "center",
     backgroundColor: C.card,
@@ -441,7 +430,7 @@ const b = StyleSheet.create({
   captureTabItem: { alignItems: "center", justifyContent: "center" },
   captureTabItems: { flex: 1, justifyContent: "flex-start" },
   captureTabToggle: { alignItems: "center", justifyContent: "center" },
-  inputArea: {},
+  inputArea: { backgroundColor: "transparent", bottom: 0, left: 0, position: "absolute", right: 0 },
 });
 
 const cal = StyleSheet.create({

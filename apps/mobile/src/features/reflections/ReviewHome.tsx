@@ -36,13 +36,7 @@ export const ReviewHome = () => {
               <RNText style={[s.eyebrow, { fontSize: ms(10), letterSpacing: ms(1.5) }]}>REFLECT</RNText>
               <RNText style={[s.title, { fontSize: ms(22), marginTop: ms(3) }]}>Review</RNText>
             </View>
-            <Pressable
-              style={[s.historyBtn, { borderRadius: ms(12), paddingHorizontal: ms(12), paddingVertical: ms(8) }]}
-              onPress={() => {}}
-            >
-              <Ionicons name="time-outline" size={ms(14)} color={C.text} />
-              <RNText style={[s.historyBtnText, { fontSize: ms(11) }]}>History</RNText>
-            </Pressable>
+            <View style={{ width: ms(36) }} />
           </View>
 
           <View style={[s.pastReviewsContainer, { marginTop: ms(24), height: ms(320), borderRadius: ms(20) }]}>
@@ -104,8 +98,6 @@ const s = StyleSheet.create({
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   eyebrow: { color: C.accent, fontWeight: "900" },
   title: { color: C.text, fontWeight: "900", letterSpacing: -0.5 },
-  historyBtn: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderWidth: 1, borderColor: C.border },
-  historyBtnText: { color: C.text, fontWeight: "700" },
   pastReviewsContainer: { overflow: "hidden", backgroundColor: C.card, borderWidth: 1, borderColor: C.border },
   fadeTop: { position: "absolute", top: 0, left: 0, right: 0, height: 48, flexDirection: "column" },
   fadeBottom: { position: "absolute", bottom: 0, left: 0, right: 0, height: 48, flexDirection: "column" },

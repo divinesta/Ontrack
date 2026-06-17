@@ -1,12 +1,14 @@
 import { useCallback, useRef, useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, View, Text as RNText } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 
-import { ChatComposer } from "@/components/ui";
+import { ChatBubble, ChatComposer, TypingDots } from "@/components/ui";
 import { useResponsiveMetrics } from "@/theme";
 import { palette as C } from "@/features/journal/colors";
+import { MOCK_REFLECTION } from "./mockReflection";
 
 type ChatMessage = {
   id: string;
@@ -26,34 +28,6 @@ const NAV_ITEMS: NavItem[] = [
   { name: "settings", route: "/(tabs)/settings", icon: "settings-outline" },
 ];
 
-const MOCK_REFLECTION = `## Your June Review
-
-### Frequency — Did you show up?
-
-You logged **22 out of 30 days** this month. Your first two weeks were unbroken — zero missed days. The consistency dropped after day 20, but this aligns with your intentional recovery period after the project deadline.
-
-**Work/Projects** saw the most entries (18), followed closely by **Personal/Wellbeing** (15). Learning held steady at 14 entries.
-
-### Duration — Did you stay long enough?
-
-Your learning sessions grew from an average of 20 minutes to **35 minutes** — a significant deepening. Work sessions remained consistent at ~45 min. Personal practices were brief (10 min avg) but daily, which is the right shape for maintenance habits.
-
-### Intensity — Did the effort matter?
-
-Work intensity **peaked days 12–16** around the proposal deadline. This produced real output — the proposal was completed 2 days early and client feedback was positive. The spike was productive but unsustainable; the recovery week that followed was the correct response.
-
-Learning intensity was moderate and even throughout — the ideal pattern for knowledge retention. You started a TypeScript deep-dive course on Jun 22 and maintained daily momentum.
-
----
-
-**What moved forward:** Work/Projects, Learning, Faith
-**What held steady:** Personal/Wellbeing
-**What needs attention:** Side Projects (only 4 entries, deprioritized during crunch)
-
-### Looking Ahead
-
-Consider protecting Saturday mornings for side projects. Your current intensity cap works — keep it to 4 consecutive high-effort days max. The learning habit at 35 min is self-sustaining now; maintain it.`;
-
 export const ReviewResult = () => {
   const router = useRouter();
   const { insets, moderateScale, contentPaddingX, captureComposer } = useResponsiveMetrics();
@@ -62,6 +36,7 @@ export const ReviewResult = () => {
   const [navExpanded, setNavExpanded] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isAiThinking, setIsAiThinking] = useState(false);
 
   const navExpandAnim = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef<ScrollView>(null);
@@ -86,6 +61,7 @@ export const ReviewResult = () => {
   const handleChatSend = useCallback((text: string) => {
     const userMsg: ChatMessage = { id: `u-${Date.now()}`, role: "user", text };
     setChatMessages((prev) => [...prev, userMsg]);
+    setIsAiThinking(true);
     setTimeout(() => {
       const aiMsg: ChatMessage = {
         id: `a-${Date.now()}`,
@@ -93,6 +69,7 @@ export const ReviewResult = () => {
         text: "That's a great question. Looking at your entries, the gym drop-off after week 2 does correlate with the work intensity spike — they share the same inflection point. Your energy budget shifted toward the deadline.",
       };
       setChatMessages((prev) => [...prev, aiMsg]);
+      setIsAiThinking(false);
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
     }, 1500);
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
@@ -113,14 +90,25 @@ export const ReviewResult = () => {
           <Ionicons name="arrow-back" size={ms(20)} color={C.text} />
         </Pressable>
         <RNText style={[s.stepTitle, { fontSize: ms(16) }]}>Your Review</RNText>
-        <View style={{ width: ms(20) }} />
+        <Pressable
+          style={[s.historyBtn, { borderRadius: ms(12), paddingHorizontal: ms(10), paddingVertical: ms(7) }]}
+          onPress={() => {}}
+        >
+          <Ionicons name="time-outline" size={ms(14)} color={C.text} />
+          <RNText style={[s.historyBtnText, { fontSize: ms(11) }]}>History</RNText>
+        </Pressable>
       </View>
 
       {/* Scrollable content */}
       <ScrollView
         ref={scrollRef}
         style={s.resultScroll}
-        contentContainerStyle={{ paddingHorizontal: contentPaddingX, paddingBottom: chatOpen ? ms(20) : insets.bottom + ms(100) }}
+        contentContainerStyle={{
+          paddingHorizontal: contentPaddingX,
+          paddingBottom: chatOpen
+            ? captureComposer.rowHeight + captureComposer.verticalPadding * 2 + ms(24)
+            : insets.bottom + ms(100),
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -158,37 +146,43 @@ export const ReviewResult = () => {
         </View>
 
         {/* Inline chat messages */}
-        {chatMessages.length > 0 && (
+        {(chatMessages.length > 0 || isAiThinking) && (
           <View style={[s.chatSection, { marginTop: ms(24), borderTopWidth: 1, borderTopColor: C.border, paddingTop: ms(16) }]}>
             {chatMessages.map((msg) => (
-              <View
+              <ChatBubble
                 key={msg.id}
-                style={[
-                  s.chatBubble,
-                  msg.role === "user" ? s.chatBubbleUser : s.chatBubbleAI,
-                  { borderRadius: ms(16), padding: ms(14), marginBottom: ms(10), maxWidth: "85%" },
-                ]}
-              >
-                <RNText style={[s.chatBubbleText, msg.role === "user" && s.chatBubbleTextUser, { fontSize: ms(13), lineHeight: ms(20) }]}>{msg.text}</RNText>
-              </View>
+                role={msg.role}
+                text={msg.text}
+                style={{ borderRadius: ms(16), padding: ms(14), marginBottom: ms(10) }}
+                textStyle={{ fontSize: ms(13), lineHeight: ms(20) }}
+              />
             ))}
+            {isAiThinking && (
+              <ChatBubble role="ai" style={{ borderRadius: ms(16), padding: ms(14), marginBottom: ms(10) }}>
+                <TypingDots size={ms(5)} />
+              </ChatBubble>
+            )}
           </View>
         )}
       </ScrollView>
 
       {/* Composer (shown when chatOpen) */}
       {chatOpen && (
-        <View style={[s.composerArea, { paddingBottom: insets.bottom + ms(10), paddingHorizontal: captureComposer.horizontalPadding, paddingTop: captureComposer.verticalPadding }]}>
+        <KeyboardStickyView
+          offset={{ closed: -ms(18), opened: -ms(18) }}
+          style={[s.composerArea, { paddingBottom: captureComposer.verticalPadding + ms(8), paddingHorizontal: captureComposer.horizontalPadding, paddingTop: captureComposer.verticalPadding }]}
+        >
           <ChatComposer placeholder="Ask about your review..." onSend={handleChatSend} />
-        </View>
+        </KeyboardStickyView>
       )}
 
       {/* Floating dock: collapsible nav on top, chat circle below */}
-      <View
+      <KeyboardStickyView
+        offset={{ closed: -ms(18), opened: -ms(18) }}
         style={[
           s.bottomDock,
           {
-            bottom: chatOpen ? insets.bottom + ms(10) + captureComposer.rowHeight + captureComposer.verticalPadding * 2 : 0,
+            bottom: chatOpen ? captureComposer.rowHeight + captureComposer.verticalPadding * 2 + ms(8) : 0,
             paddingBottom: chatOpen ? ms(10) : captureComposer.bottomOffset,
             paddingHorizontal: captureComposer.horizontalPadding,
             paddingTop: captureComposer.verticalPadding,
@@ -240,7 +234,7 @@ export const ReviewResult = () => {
             <Ionicons name={chatOpen ? "close" : "chatbubble-ellipses"} size={ms(18)} color={chatOpen ? C.text : C.dark} />
           </Pressable>
         </View>
-      </View>
+      </KeyboardStickyView>
 
       </SafeAreaView>
   );
@@ -249,6 +243,8 @@ export const ReviewResult = () => {
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  historyBtn: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: C.card, borderWidth: 1, borderColor: C.border },
+  historyBtnText: { color: C.text, fontWeight: "700" },
   stepTitle: { color: C.text, fontWeight: "900" },
   resultScroll: { flex: 1 },
   periodBadge: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.card, borderWidth: 1, borderColor: C.border },
@@ -260,13 +256,7 @@ const s = StyleSheet.create({
   mdHr: { height: 1, backgroundColor: C.border },
 
   chatSection: {},
-  chatBubble: {},
-  chatBubbleUser: { backgroundColor: C.dark, alignSelf: "flex-end" },
-  chatBubbleAI: { backgroundColor: C.card, borderWidth: 1, borderColor: C.border, alignSelf: "flex-start" },
-  chatBubbleText: { color: C.text, fontWeight: "600" },
-  chatBubbleTextUser: { color: C.accent },
-
-  composerArea: { borderTopWidth: 1, borderTopColor: C.border, backgroundColor: C.bg },
+  composerArea: { backgroundColor: "transparent", bottom: 0, left: 0, position: "absolute", right: 0 },
 
   bottomDock: { position: "absolute", left: 0, right: 0 },
   bottomDockInner: { alignItems: "flex-end" },
