@@ -12,7 +12,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 
-import { ChatComposer, TypingDots, VoiceRecordingResult } from "@/components/ui";
+import { TypingDots } from "@/components/ui";
+import { ChatComposer } from "@/components/ui/ChatComposer";
+import type { VoiceRecordingResult } from "@/components/ui/useVoiceRecorder";
 import { useResponsiveMetrics } from "@/theme";
 import { createMockEntry, simulateProcessing, simulateRefine, simulateSave } from "../mock";
 import { palette as C } from "../colors";

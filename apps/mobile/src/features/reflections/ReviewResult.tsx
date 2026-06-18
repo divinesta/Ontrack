@@ -5,7 +5,9 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 
-import { ChatBubble, ChatComposer, TypingDots, VoiceRecordingResult } from "@/components/ui";
+import { ChatBubble, TypingDots } from "@/components/ui";
+import { ChatComposer } from "@/components/ui/ChatComposer";
+import type { VoiceRecordingResult } from "@/components/ui/useVoiceRecorder";
 import { useResponsiveMetrics } from "@/theme";
 import { palette as C } from "@/features/journal/colors";
 import { MOCK_REFLECTION } from "./mockReflection";

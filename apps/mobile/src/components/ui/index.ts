@@ -1,6 +1,5 @@
 export * from "./AutoGrowingTextInput";
 export * from "./BottomSheet";
-export * from "./ChatComposer";
 export * from "./ChatBubble";
 export * from "./Button";
 export * from "./Card";
@@ -8,9 +7,7 @@ export * from "./Chip";
 export * from "./IconButton";
 export * from "./KeyboardAwareScreen";
 export * from "./ProgressBar";
-export * from "./RecordingWaveform";
 export * from "./Screen";
 export * from "./SettingsScreen";
 export * from "./Text";
 export * from "./TypingDots";
-export * from "./useVoiceRecorder";
