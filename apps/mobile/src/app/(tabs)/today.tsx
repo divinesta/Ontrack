@@ -1,5 +1,5 @@
-import { TodayC } from "@/features/today/variants";
+import { Today } from "@/features/today/variants";
 
 export default function TodayScreen() {
-  return <TodayC />;
+  return <Today />;
 }
