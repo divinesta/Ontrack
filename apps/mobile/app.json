@@ -35,6 +35,13 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow OnTrack to record voice notes for your logs and reflections.",
+          "enableBackgroundRecording": false
+        }
       ]
     ],
     "experiments": {

@@ -184,7 +184,7 @@ function toKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function TodayC() {
+export const Today = () => {
   const r = useResponsiveMetrics();
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [showCreate, setShowCreate] = useState(false);

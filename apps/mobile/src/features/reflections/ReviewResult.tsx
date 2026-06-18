@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 
-import { ChatBubble, ChatComposer, TypingDots } from "@/components/ui";
+import { ChatBubble, ChatComposer, TypingDots, VoiceRecordingResult } from "@/components/ui";
 import { useResponsiveMetrics } from "@/theme";
 import { palette as C } from "@/features/journal/colors";
 import { MOCK_REFLECTION } from "./mockReflection";
@@ -67,6 +67,24 @@ export const ReviewResult = () => {
         id: `a-${Date.now()}`,
         role: "ai",
         text: "That's a great question. Looking at your entries, the gym drop-off after week 2 does correlate with the work intensity spike — they share the same inflection point. Your energy budget shifted toward the deadline.",
+      };
+      setChatMessages((prev) => [...prev, aiMsg]);
+      setIsAiThinking(false);
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+    }, 1500);
+    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+  }, []);
+
+  const handleChatAudioSend = useCallback((audio: VoiceRecordingResult) => {
+    const seconds = Math.max(1, Math.round(audio.durationMillis / 1000));
+    const userMsg: ChatMessage = { id: `vu-${Date.now()}`, role: "user", text: `Voice question (${seconds}s)` };
+    setChatMessages((prev) => [...prev, userMsg]);
+    setIsAiThinking(true);
+    setTimeout(() => {
+      const aiMsg: ChatMessage = {
+        id: `va-${Date.now()}`,
+        role: "ai",
+        text: "I captured your voice question. Once transcription is connected, I'll answer from the spoken prompt directly.",
       };
       setChatMessages((prev) => [...prev, aiMsg]);
       setIsAiThinking(false);
@@ -172,7 +190,7 @@ export const ReviewResult = () => {
           offset={{ closed: -ms(18), opened: -ms(18) }}
           style={[s.composerArea, { paddingBottom: captureComposer.verticalPadding + ms(8), paddingHorizontal: captureComposer.horizontalPadding, paddingTop: captureComposer.verticalPadding }]}
         >
-          <ChatComposer placeholder="Ask about your review..." onSend={handleChatSend} />
+          <ChatComposer placeholder="Ask about your review..." onSend={handleChatSend} onSendAudio={handleChatAudioSend} />
         </KeyboardStickyView>
       )}
 

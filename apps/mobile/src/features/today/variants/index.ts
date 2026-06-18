@@ -1,1 +1,1 @@
-export { TodayC } from "./TodayC";
+export { TodayC } from "./Today";

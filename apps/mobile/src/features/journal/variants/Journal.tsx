@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 
-import { ChatComposer, TypingDots } from "@/components/ui";
+import { ChatComposer, TypingDots, VoiceRecordingResult } from "@/components/ui";
 import { useResponsiveMetrics } from "@/theme";
 import { createMockEntry, simulateProcessing, simulateRefine, simulateSave } from "../mock";
 import { palette as C } from "../colors";
@@ -179,6 +179,19 @@ export function JournalB() {
     setTimeout(() => updateMessage(entry.id, { status: "processing" }), 300);
     await simulateProcessing();
     updateMessage(entry.id, { status: "ready" });
+  }, [updateMessage]);
+
+  const handleSendAudio = useCallback(async (audio: VoiceRecordingResult) => {
+    const seconds = Math.max(1, Math.round(audio.durationMillis / 1000));
+    const msg: Message = {
+      id: `voice-${Date.now()}`,
+      text: `Voice note captured (${seconds}s)`,
+      status: "processing",
+    };
+    setMessages((prev) => [...prev, msg]);
+
+    await simulateProcessing();
+    updateMessage(msg.id, { text: `Voice note ready for transcription (${seconds}s)`, status: "ready" });
   }, [updateMessage]);
 
   const handleRefine = useCallback(async (id: string, originalText: string) => {
@@ -380,7 +393,7 @@ export function JournalB() {
           </Animated.View>
         </View>
 
-        <ChatComposer placeholder="Drop a thought here..." onSend={handleSend} />
+        <ChatComposer placeholder="Drop a thought here..." onSend={handleSend} onSendAudio={handleSendAudio} />
       </KeyboardStickyView>
     </View>
   );
