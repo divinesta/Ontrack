@@ -130,7 +130,6 @@ model users {
   onboarding_completed_at DateTime?
   created_at              DateTime
   updated_at              DateTime          @updatedAt
-  deleted_at              DateTime?
 
   admin_model_configs       admin_model_configs[]
   ai_usage_events           ai_usage_events[]
@@ -157,9 +156,8 @@ model auth_accounts {
   email               String?
   created_at          DateTime      @default(now())
   updated_at          DateTime      @updatedAt
-  deleted_at          DateTime?
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, provider_account_id])
   @@index([user_id])
@@ -179,9 +177,8 @@ model subscriptions {
   canceled_at              DateTime?
   created_at               DateTime            @default(now())
   updated_at               DateTime            @updatedAt
-  deleted_at               DateTime?
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
   @@index([provider, provider_subscription_id])
@@ -202,9 +199,8 @@ model user_settings {
   pending_task_reminder_enabled Boolean   @default(true)
   created_at                    DateTime  @default(now())
   updated_at                    DateTime  @updatedAt
-  deleted_at                    DateTime?
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model categories {
@@ -217,9 +213,8 @@ model categories {
   is_default Boolean       @default(false)
   created_at DateTime      @default(now())
   updated_at DateTime      @updatedAt
-  deleted_at DateTime?
 
-  user                users                 @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user                users                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
   entries             entries[]
   task_items          task_items[]
   tracker_definitions tracker_definitions[]
@@ -246,10 +241,9 @@ model entries {
   created_at     DateTime
   ingested_at    DateTime         @default(now())
   updated_at     DateTime         @updatedAt
-  deleted_at     DateTime?
 
   category        categories?       @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  user            users             @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user            users             @relation(fields: [user_id], references: [id], onDelete: Cascade)
   entry_audio     entry_audio?
   tracker_records tracker_records[]
 
@@ -267,9 +261,8 @@ model entry_audio {
   file_size_bytes  Int?
   created_at       DateTime  @default(now())
   updated_at       DateTime  @updatedAt
-  deleted_at       DateTime?
 
-  entry entries @relation(fields: [entry_id], references: [id], onDelete: Restrict)
+  entry entries @relation(fields: [entry_id], references: [id], onDelete: Cascade)
 }
 
 model tracker_definitions {
@@ -284,12 +277,11 @@ model tracker_definitions {
   is_active        Boolean           @default(true)
   created_at       DateTime          @default(now())
   updated_at       DateTime          @updatedAt
-  deleted_at       DateTime?
 
   category categories        @relation(fields: [category_id], references: [id], onDelete: Restrict)
   fields   tracker_fields[]
   records  tracker_records[]
-  user     users             @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user     users             @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, slug])
   @@index([user_id])
@@ -310,9 +302,8 @@ model tracker_fields {
   config_json           Json?
   created_at            DateTime           @default(now())
   updated_at            DateTime           @updatedAt
-  deleted_at            DateTime?
 
-  tracker_definition tracker_definitions @relation(fields: [tracker_definition_id], references: [id], onDelete: Restrict)
+  tracker_definition tracker_definitions @relation(fields: [tracker_definition_id], references: [id], onDelete: Cascade)
 
   @@unique([tracker_definition_id, key])
   @@index([tracker_definition_id])
@@ -334,12 +325,11 @@ model tracker_records {
   created_at            DateTime
   ingested_at           DateTime              @default(now())
   updated_at            DateTime              @updatedAt
-  deleted_at            DateTime?
 
   category           categories          @relation(fields: [category_id], references: [id], onDelete: Restrict)
-  source_entry       entries?            @relation(fields: [source_entry_id], references: [id], onDelete: SetNull)
+  source_entry       entries?            @relation(fields: [source_entry_id], references: [id], onDelete: Cascade)
   tracker_definition tracker_definitions @relation(fields: [tracker_definition_id], references: [id], onDelete: Restrict)
-  user               users               @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user               users               @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id, record_date])
   @@index([tracker_definition_id, record_date])
@@ -362,9 +352,8 @@ model task_plans {
   created_at        DateTime
   ingested_at       DateTime         @default(now())
   updated_at        DateTime         @updatedAt
-  deleted_at        DateTime?
 
-  user       users        @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user       users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   task_items task_items[]
 
   @@unique([user_id, plan_date])
@@ -389,10 +378,9 @@ model task_items {
   created_at      DateTime
   ingested_at     DateTime         @default(now())
   updated_at      DateTime         @updatedAt
-  deleted_at      DateTime?
 
   category                categories?               @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  user                    users                     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user                    users                     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   task_plan               task_plans?               @relation(fields: [task_plan_id], references: [id], onDelete: SetNull)
   imported_calendar_event imported_calendar_events?
 
@@ -416,9 +404,8 @@ model calendar_connections {
   last_synced_at         DateTime?
   created_at             DateTime      @default(now())
   updated_at             DateTime      @updatedAt
-  deleted_at             DateTime?
 
-  user                     users                      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user                     users                      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   imported_calendar_events imported_calendar_events[]
 
   @@index([user_id])
@@ -439,11 +426,10 @@ model imported_calendar_events {
   last_seen_at                DateTime?
   created_at                  DateTime             @default(now())
   updated_at                  DateTime             @updatedAt
-  deleted_at                  DateTime?
 
-  calendar_connection calendar_connections @relation(fields: [calendar_connection_id], references: [id], onDelete: Restrict)
-  task_item           task_items           @relation(fields: [task_item_id], references: [id], onDelete: Restrict)
-  user                users                @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  calendar_connection calendar_connections @relation(fields: [calendar_connection_id], references: [id], onDelete: Cascade)
+  task_item           task_items           @relation(fields: [task_item_id], references: [id], onDelete: Cascade)
+  user                users                @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, provider_event_id, provider_occurrence_start])
   @@index([user_id])
@@ -464,9 +450,8 @@ model reflections {
   ai_request_id     String?
   created_at        DateTime
   updated_at        DateTime               @updatedAt
-  deleted_at        DateTime?
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, period_type, period_start_date, period_end_date])
   @@index([status])
@@ -482,9 +467,8 @@ model reflection_summary_caches {
   refreshed_at      DateTime
   created_at        DateTime               @default(now())
   updated_at        DateTime               @updatedAt
-  deleted_at        DateTime?
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, period_type, period_start_date, period_end_date])
 }
@@ -500,9 +484,8 @@ model ai_usage_events {
   count_toward_quota Boolean          @default(false)
   created_at         DateTime         @default(now())
   updated_at         DateTime         @updatedAt
-  deleted_at         DateTime?
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id, created_at])
   @@index([ai_request_id])
@@ -518,7 +501,6 @@ model admin_model_configs {
   created_by_user_id      String
   created_at              DateTime  @default(now())
   updated_at              DateTime  @updatedAt
-  deleted_at              DateTime?
 
   created_by_user users @relation(fields: [created_by_user_id], references: [id], onDelete: Restrict)
 
