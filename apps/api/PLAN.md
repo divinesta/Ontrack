@@ -942,4 +942,3 @@ Add tests as each feature lands. Do not leave these until the end.
 - Audio storage provider and signed-upload approach.
 - Notification provider for mobile reminders.
 - Whether to add module-local repository files immediately or only for complex domains.
-- Whether `docs/CONTEXT.md` should be the canonical context file, since `docs/README.md` currently refers to a root `CONTEXT.md` that is not present.

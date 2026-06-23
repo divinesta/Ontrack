@@ -4,6 +4,6 @@ type SendEmailInput = {
    hrml: string;
 }
 
-export const sendEmail = async (input: SendEmailInput) => {
-   
+export const sendEmail = async (_input: SendEmailInput) => {
+   throw new Error("Infobip email integration is not implemented yet");
 }

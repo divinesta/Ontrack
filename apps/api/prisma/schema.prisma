@@ -350,7 +350,7 @@ model tracker_records {
   updated_at            DateTime              @updatedAt
 
   category           categories          @relation(fields: [category_id], references: [id], onDelete: Restrict)
-  source_entry       entries?            @relation(fields: [source_entry_id], references: [id], onDelete: Cascade)
+  source_entry       entries?            @relation(fields: [source_entry_id], references: [id], onDelete: SetNull)
   tracker_definition tracker_definitions @relation(fields: [tracker_definition_id], references: [id], onDelete: Restrict)
   user               users               @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
