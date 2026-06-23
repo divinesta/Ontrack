@@ -13,6 +13,8 @@ const envSchema = z.object({
    PORT: z.coerce.number().int().positive().default(4000),
    API_PREFIX: z.string().default("/api/v1"),
 
+	JWT_SECRET: z.string().min(32),
+
    CORS_ORIGIN: z.string().default("*"),
 
    DATABASE_URL: z.url(),
