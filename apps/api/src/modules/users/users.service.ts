@@ -1,3 +1,10 @@
+import prisma from "../../config/database";
+
+
 export const usersService = {
-  // Add users business logic here.
+   getCurrentUser: (userId: string) => {
+      return prisma.users.findUnique({
+         where: { id: userId },
+      });
+   },
 };
