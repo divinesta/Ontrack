@@ -118,6 +118,27 @@ enum tracker_record_origin {
   ai
 }
 
+enum notification_channel {
+  push
+  email
+}
+
+enum notification_delivery_status {
+  queued
+  sent
+  failed
+  skipped
+}
+
+enum notification_type {
+  morning_reminder
+  night_reminder
+  follow_up_nudge
+  pending_task_nudge
+  weekly_reflection
+  monthly_reflection
+}
+
 model users {
   id                      String            @id @default(cuid())
   email                   String            @unique
@@ -146,6 +167,8 @@ model users {
   tracker_definitions       tracker_definitions[]
   tracker_records           tracker_records[]
   user_settings             user_settings?
+  notification_subscriptions notification_subscriptions[]
+  notification_deliveries   notification_deliveries[]
 }
 
 model auth_accounts {
@@ -508,5 +531,46 @@ model admin_model_configs {
   @@index([created_by_user_id])
 }
 
-// TODO(reminders): add a persistent reminder_delivery_history / scheduled_notifications table
-// when reminder execution and auditability are implemented.
+model notification_subscriptions {
+  id                 String                   @id @default(cuid())
+  user_id            String
+  provider           String
+  provider_external_id                String
+  provider_player_id         String?
+  is_active  Boolean  @default(true)
+  created_at         DateTime                 @default(now())
+  updated_at         DateTime                 @updatedAt
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_external_id])
+  @@index([user_id])
+  @@index([is_active])
+}
+
+model notification_deliveries {
+  id                  String                       @id @default(cuid())
+  user_id             String
+  type                notification_type
+  channel             notification_channel
+  status              notification_delivery_status @default(queued)
+  provider            String?
+  provider_message_id String?
+  title               String?
+  body                String?
+  payload_json        Json?
+  error_message       String?
+  scheduled_for       DateTime?
+  sent_at             DateTime?
+  created_at          DateTime                     @default(now())
+  updated_at          DateTime                     @updatedAt
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, created_at])
+  @@index([status])
+  @@index([type])
+  @@index([scheduled_for])
+}
+
+

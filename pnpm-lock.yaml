@@ -29,6 +29,9 @@ importers:
       '@prisma/internals':
         specifier: ^7.8.0
         version: 7.8.0(typescript@5.9.2)
+      '@workos-inc/node':
+        specifier: ^10.4.0
+        version: 10.4.0
       api:
         specifier: 'link:'
         version: 'link:'
@@ -2432,6 +2435,10 @@ packages:
         optional: true
       babel-plugin-react-compiler:
         optional: true
+
+  '@workos-inc/node@10.4.0':
+    resolution: {integrity: sha512-mrrjFYQsYGbY/rGLqUN9IIwzoCa3aIg9gXViIRpzfXkH2mozJ1NBcxSivN3SpqLgoGDuyp3Wg3Mg5UgTJU4FYQ==}
+    engines: {node: '>=22.11.0'}
 
   '@xmldom/xmldom@0.8.13':
     resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
@@ -8632,6 +8639,8 @@ snapshots:
       vite: 8.0.13(@types/node@24.12.4)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)
     optionalDependencies:
       babel-plugin-react-compiler: 1.0.0
+
+  '@workos-inc/node@10.4.0': {}
 
   '@xmldom/xmldom@0.8.13': {}
 
